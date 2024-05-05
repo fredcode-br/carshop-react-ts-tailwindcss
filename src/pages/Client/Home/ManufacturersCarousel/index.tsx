@@ -5,7 +5,7 @@ import ManufacturerCard from './ManufacturerCard';
 import { useApi } from '../../../../hooks/useApi';
 import { useEffect, useState } from 'react';
 import IManufacturer from '../../../../types/IManufacturer';
-   
+
 interface ArrowProps {
   className?: string;
   style?: React.CSSProperties;
@@ -14,7 +14,7 @@ interface ArrowProps {
 
 function NextArrow(props: ArrowProps) {
   const { className, style, onClick } = props;
- 
+
   return (
     <div
       className={className}
@@ -37,8 +37,8 @@ function PrevArrow(props: ArrowProps) {
   );
 }
 
-function ManufacturersCarousel(){
-  const [manufacturers, setManufacturers ] = useState<Partial<IManufacturer[]> | null>(null)
+function ManufacturersCarousel() {
+  const [manufacturers, setManufacturers] = useState<Partial<IManufacturer[]> | null>(null)
   const { get } = useApi();
 
   useEffect(() => {
@@ -53,94 +53,64 @@ function ManufacturersCarousel(){
       }
     };
 
-    getManufacturers(); 
+    getManufacturers();
   }, [get]);
 
-    // const manufacturers = [
-    //     {
-    //         name: "Marca 1",
-    //         image: "/src/assets/img/fiat.png",
-    //     },
-    //     {
-    //         name: "Marca 2",
-    //         image: "/src/assets/img/fiat.png",
-    //     },
-    //     {
-    //         name: "Marca 3",
-    //         image: "/src/assets/img/fiat.png",
-    //     },
-    //     {
-    //         name: "Marca 4",
-    //         image: "/src/assets/img/fiat.png",
-    //     },
-    //     {
-    //         name: "Marca 5",
-    //         image: "/src/assets/img/fiat.png",
-    //     },
-    //     {
-    //         name: "Marca 6",
-    //         image: "/src/assets/img/fiat.png",
-    //     },
-    //     {
-    //         name: "Marca 7",
-    //         image: "/src/assets/img/fiat.png",
-    //     },
-    // ]
 
-    const responsiveSettings = [
-        {
-          breakpoint: 980,
-          settings: {
-            slidesToShow: 5,
-            slidesToScroll: 1,
-          },
-        },
-        {
-          breakpoint: 768,
-          settings: {
-            slidesToShow: 2,
-            slidesToScroll: 1,
-          },
-        },
-        {
-          breakpoint: 480,
-          settings: {
-            slidesToShow: 1,
-            slidesToScroll: 1,
-          },
-        },
-      ];
-    
-      const settings = {
-        dots: false,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 5, 
-        slidesToScroll: 1, 
-        responsive: responsiveSettings,
-        nextArrow: <NextArrow />,
-        prevArrow: <PrevArrow />
-      };
+  const responsiveSettings = [
+    {
+      breakpoint: 980,
+      settings: {
+        slidesToShow: 5,
+        slidesToScroll: 1,
+      },
+    },
+    {
+      breakpoint: 768,
+      settings: {
+        slidesToShow: 2,
+        slidesToScroll: 1,
+      },
+    },
+    {
+      breakpoint: 480,
+      settings: {
+        slidesToShow: 1,
+        slidesToScroll: 1,
+      },
+    },
+  ];
+
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    responsive: responsiveSettings,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />
+  };
 
   return (
     <section id="favorites" className="flex flex-col items-center pt-4">
       <div className="container">
-      {manufacturers !== null ? (
-  <Slider {...settings} className="w-full">
-    {manufacturers.map((manufacturer) => (
-      <div key={manufacturer && manufacturer.id}>
-        {manufacturer && (
-          <ManufacturerCard
-            name={manufacturer.name}
-            image={manufacturer.imageUrl}
-          />
+        {manufacturers !== null ? (
+          <Slider {...settings} className="w-full">
+            {manufacturers.map((manufacturer) => (
+              <div key={manufacturer && manufacturer.id}>
+                {manufacturer && (
+                  <ManufacturerCard
+                    name={manufacturer.name}
+                    image={manufacturer.imageUrl}
+                  />
+                )}
+              </div>
+            ))}
+          </Slider>
+        ) : (
+          <p>Carregando...</p>
         )}
-      </div>
-    ))}
-  </Slider>
-) : (
-  <p>Carregando...</p>
-)}
 
       </div>
     </section>
