@@ -1,72 +1,73 @@
-import { ReactNode, createContext, useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import IUser from "../../types/IUser";
-import { useApi } from "../../hooks/useApi";
+import { createContext, useState, useEffect } from 'react';
+import { useApi } from '../../hooks/useApi';
+import axios, { AxiosError } from 'axios';
 
-
-type Props = {
-    children?: ReactNode;
-};
-
-interface ILogin {
-    email: string;
-    password: string;
+interface AuthContextData {
+  signed: boolean;
+  user: object | null;
+  error: string | null;
+  signIn(user: object): Promise<void>;
+  signOut(): void;
 }
 
-type AuthContextType = {
-    currentUser: IUser | undefined;
-    signed: boolean;
-    signIn: ({ email, password }: ILogin) => Promise<void>;
-    signOut: () => void;
+type Props = {  
+    children: React.ReactNode;
 };
 
-export const AuthContext = createContext<AuthContextType>({
-    currentUser: undefined,
-    signed: false,
-    signIn: async () => {},
-    signOut: async () => {},
-});
+export const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export const AuthProvider = ({ children }: Props) => {
-    const { login } = useApi();
-    const [currentUser, setCurrentUser] = useState<IUser | undefined>();
-    
-    useEffect(() => {
-        const loadingStorageData = async () => {
-            const storageUserData = localStorage.getItem("@Auth:user");
-            const storageUser = storageUserData ? JSON.parse(storageUserData) as IUser : undefined;
-            const storageToken = localStorage.getItem("@Auth:token");
-    
-            if (storageUser && storageToken) {
-                setCurrentUser(storageUser);
-            }
-        };///
-        loadingStorageData();
-    }, []);
-    
-    const signIn = async ({ email, password }: ILogin) => {
-        const resp = await login( email, password );
+  const [user, setUser] = useState<object | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { login } = useApi();
 
-        setCurrentUser(resp.user);
-        localStorage.setItem("@Auth:token", resp.token);
-        localStorage.setItem("@Auth:user", JSON.stringify(resp.user));    
-    };
+  useEffect(() => {
+    const storagedUser = sessionStorage.getItem('@App:user');
+    const storagedToken = sessionStorage.getItem('@App:token');
 
-    const signOut = () => {
-        localStorage.clear();
-        setCurrentUser(undefined);
-        return <Navigate to="/" />;
-    };
-  
+    if (storagedToken && storagedUser) {
+      setUser(JSON.parse(storagedUser));
+    }
+  }, [setUser]);
+ 
+  async function signIn(userData: object) {
+    try {
+      const response = await login(userData);
+      setUser(response.user);
+      setError(null); 
+      sessionStorage.setItem('@App:user', JSON.stringify(response.user));
+      sessionStorage.setItem('@App:token', response.token);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response && axiosError.response.data) {
+          const errorMessage = axiosError.response.data;
+          setError(String(errorMessage));
+        } else {
+          setError('An error occurred while logging in. Please try again.');
+        }
+      } else {
+        console.error('Unknown error:', error);
+        setError('An unknown error occurred while logging in. Please try again.');
+      }
+    }
+  }
 
-    return (
-        <AuthContext.Provider value={{
-            currentUser,
-            signIn,
-            signOut,
-            signed : !!currentUser
-        }}>
-            {children}
-        </AuthContext.Provider>
-    )
-}
+  function signOut() {
+    setUser(null);
+    sessionStorage.removeItem("@App:user");
+    sessionStorage.removeItem("@App:token");
+  }
+
+  return (
+    <AuthContext.Provider value={{ 
+      signed: Boolean(user), 
+      user, 
+      error,
+      signIn, 
+      signOut 
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};

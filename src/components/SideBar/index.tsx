@@ -29,7 +29,7 @@ function SideBar() {
           activeLink={activeLink}
           setActiveLink={handleSetActiveLink}
         />
-         <SideLink 
+         <SideLink
           text="Tipos de Vículos"
           to="tipos-de-veiculos"
           iconName="home"

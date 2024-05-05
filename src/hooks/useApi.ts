@@ -1,23 +1,27 @@
 import axios from "axios";
 
+interface IUser {
+
+    user: {
+        email: string;
+        password: string;
+    };
+    token: string;
+}
+
 const api = axios.create({
-    baseURL: "http://192.168.186.151:3000"
+    baseURL: "http://localhost:3000"
 });
 
 export const useApi = () => ({
-    validateToken: async (token: string) => {
-        const response = await api.post('/validate', { token });
-        return response.data;
-    },
-    login: async (email: string, password: string) => {
-        const response = await api.post('/login', { email, password });
+    login: async (user: object): Promise<IUser> => {
+        const response = await api.post('/login', user);
         return response.data;
     },
     logout: async () => {
         const response = await api.post('/logout');
         return response.data;
     },
-
     get: async (endpoint: string, token?: string) => {
         try {
             const headers: HeadersInit = {};
@@ -32,46 +36,24 @@ export const useApi = () => ({
             throw error;
         }
     },
-    
-    post: async (endpoint: string, body: object, token: string) => {
+
+    post: async (endpoint: string, body: object, token?: string) => {
         try {
+            const headers: Record<string, string> = {}; 
+            
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+    
             const response = await api.post(endpoint, body, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                headers: headers
             });
             return response.data;
         } catch (error) {
             console.error('Erro ao fazer solicitação POST:', error);
             throw error;
         }
-    },
-
-    put: async (endpoint: string, body: object, token: string) => {
-        try {
-            const response = await api.put(endpoint, body, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Erro ao fazer solicitação PUT:', error);
-            throw error;
-        }
-    },
-
-    del: async (endpoint: string, token: string) => {
-        try {
-            const response = await api.delete(endpoint, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Erro ao fazer solicitação DELETE:', error);
-            throw error;
-        }
     }
+    
+    
 });
