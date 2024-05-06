@@ -20,7 +20,7 @@ function VehicleCard({ id, imageUrl, title, price, km, year }: Props ) {
         <p className="font-bold text-center text-xl my-5 px-">{title}</p>
         <LinkButton
           text={`R$${price.toString()}`}
-          to={`/veiculos/${id}`}
+          to={`/estoque/${id}`}
           customClass=""
         />
 

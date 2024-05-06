@@ -1,24 +1,21 @@
 import { useEffect } from 'react';
+import L from 'leaflet';
 import { MapPinIcon } from '@heroicons/react/24/solid';
+import 'leaflet/dist/leaflet.css';
 
 const Location = () => {
   useEffect(() => {
-    const mapScript = document.createElement('script');
-    mapScript.src = `https://maps.googleapis.com/maps/api/js?key=SUA_CHAVE_DA_API_AQUI&libraries=places`;
-    mapScript.async = true;
-    document.head.appendChild(mapScript);
+    const map = L.map('map').setView([-23.5505, -46.6333], 15);
 
-    mapScript.onload = () => {
-      const map = new window.google.maps.Map(document.getElementById('map'), {
-        center: { lat: -23.5505, lng: -46.6333 },
-        zoom: 15,
-      });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-      const marker = new window.google.maps.Marker({
-        position: { lat: -23.5505, lng: -46.6333 },
-        map: map,
-        title: 'Localização da Empresa',
-      });
+    const marker = L.marker([-23.5505, -46.6333]).addTo(map);
+    marker.bindPopup('<b>Localização da Empresa</b><br>Av. Maj. Fernando Valle, 2013 - São Miguel, Bragança Paulista - SP, 12903-000.');
+
+    return () => {
+      map.remove();
     };
   }, []);
 
