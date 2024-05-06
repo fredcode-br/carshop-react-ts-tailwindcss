@@ -1,3 +1,5 @@
+import IImage from "./IMage";
+
 export default interface IVehicle {
     id: number;
     name: string;
@@ -19,8 +21,3 @@ export default interface IVehicle {
     images: IImage[];
 }
 
-interface IImage {
-    id: number;
-    imageUrl: string;
-    main: boolean;
-}

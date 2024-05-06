@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import BasePage from "./pages/Client/BasePage";
 import Home from "./pages/Client/Home";
 import Stock from "./pages/Client/Stock";
+import Vehicle from "./pages/Client/Vehicle";
 import Sell from "./pages/Client/Sell";
 import Contact from "./pages/Client/Contact";
 import Location from "./pages/Client/Location";
@@ -24,6 +25,7 @@ function AppRoutes() {
                     <Route index element={<Home />} />
                     <Route path="/home" element={<Home />} />
                     <Route path="/estoque" element={<Stock />} />
+                    <Route path="/veiculos/:id" element={<Vehicle />} />
                     <Route path="/vender" element={<Sell />} />
                     <Route path="/localizacao" element={<Location />} />       
                     <Route path="/contato" element={<Contact />} />  
@@ -34,7 +36,7 @@ function AppRoutes() {
                         <Route path="/fabricantes" element={<Manufacturers />} />
                         <Route path="/tipos-de-veiculos" element={<VehicleType />} />
                         <Route path="/categorias" element={<Categories />} />
-                        <Route path="/veiculos" element={<Vehicles />} />
+                        <Route path="/veiculos" element={<Vehicles/>} />
                     </Route>
                 </Route>       
                 <Route path="/login" element={<Login />} />

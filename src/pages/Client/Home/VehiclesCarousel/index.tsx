@@ -65,7 +65,7 @@ function VehiclesCarousel() {
   };
 
   return (
-    <section id="favorites" className="flex flex-col items-center  py-8">
+    <section id="favorites" className="flex flex-col items-center py-8">
       <div className="container">
         <h3 className="pb-5 text-center text-xl font-bold uppercase">Os Favoritos do Momento</h3>
         <Slider {...settings} className="w-full">
