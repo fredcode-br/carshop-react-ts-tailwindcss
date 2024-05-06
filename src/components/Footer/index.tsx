@@ -20,10 +20,6 @@ function Footer() {
               Estoque
             </NavLink>
 
-            <NavLink to="/vender" className="block py-2 px-3 text-white md:p-0 hover:text-slate-400 ">
-              Vender
-            </NavLink>
-
             <NavLink to="/localizacao" className="block py-2 px-3 text-white md:p-0 hover:text-slate-400">
               Localização
             </NavLink>
