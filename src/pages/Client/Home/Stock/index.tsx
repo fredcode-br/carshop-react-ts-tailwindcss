@@ -48,7 +48,7 @@ function Stock() {
             <div>
                 <LinkButton
                     text="Ver estoque"
-                    to=""
+                    to="/estoque"
                     customClass="px-5 py-3"
                 />
             </div>
