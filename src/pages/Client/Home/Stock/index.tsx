@@ -22,7 +22,7 @@ function Stock() {
 
         getVehicles();
     }, [get]);
-    return (
+    return (  
         <section id="stock" className="flex flex-col items-center pb-16">
             <h3 className="pb-5 text-center text-xl font-bold uppercase">Procurar por modelo</h3>
             <div className="container mx-auto py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -48,7 +48,7 @@ function Stock() {
             <div>
                 <LinkButton
                     text="Ver estoque"
-                    to=""
+                    to="/estoque"
                     customClass="px-5 py-3"
                 />
             </div>
