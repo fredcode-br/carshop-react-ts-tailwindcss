@@ -53,7 +53,40 @@ export const useApi = () => ({
             console.error('Erro ao fazer solicitação POST:', error);
             throw error;
         }
-    }
+    },
+
+    put: async (endpoint: string, body: object, token?: string) => {
+        try {
+            const headers: Record<string, string> = {}; 
+            
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+    
+            const response = await api.put(endpoint, body, {
+                headers: headers
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao fazer solicitação PUT:', error);
+            throw error;
+        }
+    },
+
+    del: async (endpoint: string, token?: string) => {
+        try {
+            const headers: HeadersInit = {};
+            if (token) {
+                headers.Authorization = `Bearer ${token}`;
+            }
+
+            const response = await api.delete(endpoint, { headers });
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao fazer solicitação DELETE:', error);
+            throw error;
+        }
+    },
     
     
 });
