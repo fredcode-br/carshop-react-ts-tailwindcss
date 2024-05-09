@@ -12,9 +12,11 @@ function VehiclesCarousel() {
   useEffect(() => {
     const getVehicles = async () => {
       try {
-        const response = await get('vehicles');
-        if (response) {
-          setVehicles(response);
+        if (!vehicles) {
+          const response = await get('vehicles');
+          if (response) {
+            setVehicles(response);
+          }
         }
       } catch (error) {
         console.error('Erro ao obter veículos:', error);
@@ -22,7 +24,7 @@ function VehiclesCarousel() {
     };
 
     getVehicles();
-  }, [get]);
+  }, [get, vehicles]);
 
 
   const responsiveSettings = [

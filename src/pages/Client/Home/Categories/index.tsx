@@ -11,9 +11,11 @@ function Categories() {
     useEffect(() => {
         const getCategories = async () => {
             try {
-                const response = await get('categories');
-                if (response) {
-                    setCategories(response);
+                if(!categories){   
+                    const response = await get('categories');
+                    if (response) {
+                        setCategories(response);
+                    }
                 }
             } catch (error) {
                 console.error('Erro ao obter categorias:', error);
@@ -21,7 +23,7 @@ function Categories() {
         };
 
         getCategories();
-    }, [get]);
+    }, [get, categories]);
 
     return (
         <section id="categories" className="flex flex-col items-center py-8">

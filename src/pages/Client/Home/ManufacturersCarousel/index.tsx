@@ -44,9 +44,11 @@ function ManufacturersCarousel() {
   useEffect(() => {
     const getManufacturers = async () => {
       try {
-        const response = await get('manufacturers');
-        if (response) {
-          setManufacturers(response);
+        if (!manufacturers) {
+          const response = await get('manufacturers');
+          if (response) {
+            setManufacturers(response);
+          }
         }
       } catch (error) {
         console.error('Erro ao obter fabricantes:', error);
@@ -54,8 +56,7 @@ function ManufacturersCarousel() {
     };
 
     getManufacturers();
-  }, [get]);
-
+  }, [get, manufacturers]); 
 
   const responsiveSettings = [
     {
