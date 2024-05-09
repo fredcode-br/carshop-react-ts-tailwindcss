@@ -8,8 +8,7 @@ const PrivateRoute = () => {
     const { signed } = useContext(AuthContext);
 
     return (
-        <Outlet />
-        // signed ? <Outlet /> : <Navigate to="/login" /> 
+        signed ? <Outlet /> : <Navigate to="/login" /> 
     )
 }
 
