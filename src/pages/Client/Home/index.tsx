@@ -11,10 +11,10 @@ export default function Home() {
   return (
     <>
       <Banner />
-      <ManufacturersCarousel />
-      <VehiclesCarousel/>
+      {/* <ManufacturersCarousel /> */}
+      {/* <VehiclesCarousel/>
       <Categories />
-      <Stock />
+      <Stock /> */}
     </>
   );
 }
