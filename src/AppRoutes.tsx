@@ -24,7 +24,7 @@ function AppRoutes() {
                     <Route index element={<Home />} />
                     <Route path="/home" element={<Home />} />
                     <Route path="/estoque" element={<Stock />} />
-                    <Route path="/estoque/:id" element={<Vehicle />} />
+                    <Route path="/veiculo/:id" element={<Vehicle />} />
                     <Route path="/localizacao" element={<Location />} />       
                     <Route path="/contato" element={<Contact />} />  
                 </Route>   
