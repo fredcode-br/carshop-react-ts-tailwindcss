@@ -3,6 +3,8 @@ import { useApi } from "../../../hooks/useApi";
 import IVehicle from "../../../types/IVehicle";
 import { useParams } from "react-router-dom";
 import TopData from "./TopData";
+import Optionals from "./Optionals";
+import Comments from "./Comments";
 
 function Vehicle() {
     const { id } = useParams<string>();
@@ -31,6 +33,8 @@ function Vehicle() {
     return (
         <>
             <TopData vehicle={vehicle} />
+            <Optionals optionals={vehicle?.optionals || ""} />
+            <Comments comments={vehicle?.comments || ""}/>
         </>
     );
 }
