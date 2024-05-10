@@ -29,9 +29,12 @@ function Filter() {
       />
 
       <RangeSlider />
-      <Button type="submit">
-        Pesquisar
-      </Button>
+      <div className="w-full flex">
+
+        <Button type="submit" customClass="min-w-full">
+          Pesquisar
+        </Button>
+      </div>
     </div>
   );
 }
