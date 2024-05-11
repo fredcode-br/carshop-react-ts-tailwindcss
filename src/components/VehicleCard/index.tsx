@@ -22,7 +22,7 @@ function VehicleCard({ id, imageUrl, title, price, km, year }: Props ) {
     <article className="max-w-72 rounded overflow-hidden p-3 cursor-pointer border border-solid border-black border-opacity-25 bg-white shadow-md hover:opacity-95 ">
         <div className="w-full relative"> 
           <img
-            className="w-full min-h-40 object-cover"
+            className="w-full min-h-48 object-cover"
             src={imageError ? defaultCar : `http://localhost:3000${imageUrl}`}
             alt={title}
             onError={handleImageError}
@@ -34,7 +34,7 @@ function VehicleCard({ id, imageUrl, title, price, km, year }: Props ) {
         <div className="w-full flex">
           <LinkButton
             text={`R$${price.toString()}`}
-            to={`/estoque/${id}`}
+            to={`/veiculo/${id}`}
             customClass="min-w-full"
           />
         </div>
