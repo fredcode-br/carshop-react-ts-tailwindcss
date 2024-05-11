@@ -9,7 +9,6 @@ import Location from "./pages/Client/Location";
 
 import PrivateRoute from "./utils/PrivateRoute";
 import AdminBasePage from "./pages/Panel/AdminBasePage";
-import Dashboard from "./pages/Panel/Dashboard";
 import Manufacturers from "./pages/Panel/Manufacturers";
 import VehicleType from "./pages/Panel/VehicleType";
 import Categories from "./pages/Panel/Categories";
@@ -30,7 +29,7 @@ function AppRoutes() {
                 </Route>   
                 <Route path="/" element={<PrivateRoute />}>
                     <Route element={<AdminBasePage />}>
-                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/home" element={<Navigate to="/vehicles" />} />
                         <Route path="/fabricantes" element={<Manufacturers />} />
                         <Route path="/tipos-de-veiculos" element={<VehicleType />} />
                         <Route path="/categorias" element={<Categories />} />

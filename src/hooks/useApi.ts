@@ -37,12 +37,21 @@ export const useApi = () => ({
         }
     },
 
-    post: async (endpoint: string, body: object, token?: string) => {
+    post: async (endpoint: string, body: object, token?: string, customHeaders?: Record<string, string>) => {
         try {
             const headers: Record<string, string> = {}; 
             
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
+            }
+    
+            if (customHeaders && customHeaders['Content-Type']) {
+                headers['Content-Type'] = customHeaders['Content-Type'];
+                delete customHeaders['Content-Type']; 
+            }
+            
+            if (customHeaders) {
+                Object.assign(headers, customHeaders);
             }
     
             const response = await api.post(endpoint, body, {
@@ -54,13 +63,24 @@ export const useApi = () => ({
             throw error;
         }
     },
+    
+    
 
-    put: async (endpoint: string, body: object, token?: string) => {
+    put: async (endpoint: string, body: object, token?: string, customHeaders?: Record<string, string>) => {
         try {
             const headers: Record<string, string> = {}; 
             
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
+            }
+    
+            if (customHeaders && customHeaders['Content-Type']) {
+                headers['Content-Type'] = customHeaders['Content-Type'];
+                delete customHeaders['Content-Type'];
+            }
+            
+            if (customHeaders) {
+                Object.assign(headers, customHeaders);
             }
     
             const response = await api.put(endpoint, body, {
@@ -72,6 +92,7 @@ export const useApi = () => ({
             throw error;
         }
     },
+    
 
     del: async (endpoint: string, token?: string) => {
         try {

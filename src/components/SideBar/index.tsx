@@ -22,17 +22,10 @@ function SideBar() {
         <img src={logo} alt="Logo" />
       </div>
       <nav className="flex-1 mt-5 px-2">
-        <SideLink 
-          text="Dashboard"
-          to="dashboard"
-          iconName="home"
-          activeLink={activeLink}
-          setActiveLink={handleSetActiveLink}
-        />
          <SideLink
-          text="Tipos de Vículos"
+          text="Tipos de Veículos"
           to="tipos-de-veiculos"
-          iconName="home"
+          iconName="retangle"
           activeLink={activeLink}
           setActiveLink={handleSetActiveLink}
         />
@@ -46,7 +39,7 @@ function SideBar() {
          <SideLink 
           text="Fabricantes"
           to="fabricantes"
-          iconName="home"
+          iconName="wrench"
           activeLink={activeLink}
           setActiveLink={handleSetActiveLink}
         />

@@ -17,7 +17,7 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
     const [imageUrl, setImageUrl] = useState<string>('');
     const [image, setImage] = useState<File | undefined>(undefined);
 
-    const token = localStorage.getItem("@Auth:token") || "";
+    const token = sessionStorage.getItem("@App:token") || "";
     const { get, post, put } = useApi();
 
     useEffect(() => {
@@ -36,15 +36,20 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
     }, [id, get, manufacturer]);
 
     const handleSave = async () => {
-
+        const formData = new FormData();
+        formData.append("name", name);
+        if (image) {
+            formData.append("file", image);
+        }
         if (!id) {
-            await post("manufacturers/", {
-                name, imageUrl: image
-            }, token);
+            await post("manufacturers/", formData, token, { 
+                "Content-Type": "multipart/form-data"
+            });
+                
         } else {
-            await put(`manufacturers/${id}`, {
-                name, imageUrl: image
-            }, token);
+            await put(`manufacturers/${id}`, formData, token, {
+                "Content-Type": "multipart/form-data"
+            });
         }
 
         setName('');
@@ -71,7 +76,7 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         if (acceptedFiles && acceptedFiles.length > 0) {
             const file = acceptedFiles[0];
             const reader = new FileReader();
-
+            
             reader.onload = () => {
                reader.result as string;
     
@@ -92,7 +97,8 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         <>
             {isOpen && (
                 <div className="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50 p-5">
-                    <div className="bg-white p-6 rounded-lg">
+
+                    <div className="bg-white p-6 rounded-lg"  style={{minWidth: '500px'}}>
                         <span className="absolute top-0 right-0 cursor-pointer" onClick={handleClose}>&times;</span>
                         <h2 className="text-xl font-semibold mb-4">{id ? "Atualizar" : "Cadastrar "} Fabricante</h2>
                         <div className="mb-4">
@@ -121,7 +127,7 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                                                 </div>
                                         :
                                             <div className="relative h-20 w-20">
-                                                <img src={`http://192.168.186.151:3000${imageUrl}`} alt="Manufacturer Image" className="h-20 w-20 mb-2 object-cover" />
+                                                <img src={`http://localhost:3000${imageUrl}`} alt="Manufacturer Image" className="h-20 w-20 mb-2 object-cover" />
                                                 <button className="absolute bottom-0 right-0 bg-red-500 text-white p-1 rounded-full" onClick={handleRemoveImage}>
                                                     <TrashIcon className="h-4 w-4" />
                                                 </button>

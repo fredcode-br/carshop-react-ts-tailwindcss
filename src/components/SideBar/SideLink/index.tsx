@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { HomeIcon, TruckIcon,WalletIcon } from "@heroicons/react/24/outline";
+import { WrenchIcon, RectangleGroupIcon, TruckIcon,WalletIcon } from "@heroicons/react/24/outline";
 
 interface Props {
     text: string;
@@ -12,12 +12,14 @@ interface Props {
 function SideLink({text, to, iconName, activeLink, setActiveLink}: Props) {
     const renderIcon = (iconName: string) => {
         switch (iconName) {
-            case "home":
-                return <HomeIcon className="h-6 w-6 mr-3" />;
+            case "retangle":
+                return <RectangleGroupIcon className="h-6 w-6 mr-3" />;
             case "truck":
                 return <TruckIcon className="h-6 w-6 mr-3" />;
             case "wallet":
                     return <WalletIcon className="h-6 w-6 mr-3" />;
+            case "wrench":
+                return <WrenchIcon className="h-6 w-6 mr-3" />;
             default:
                 return null;
         }
