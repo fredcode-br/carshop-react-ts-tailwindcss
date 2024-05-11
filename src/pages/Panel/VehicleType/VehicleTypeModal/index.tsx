@@ -12,7 +12,7 @@ interface Props {
 function VehicleTypeModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
     const [vehicleType, setVehicleType] = useState<IVehicleType | null>(null);
     const [name, setName] = useState('');
-    const token = localStorage.getItem("@Auth:token") || "";
+    const token = sessionStorage.getItem("@App:token") || "";
     const { get, post, put } = useApi();
 
     useEffect(() => {

@@ -35,8 +35,9 @@ function CategoryModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
             if (id && id !== vehicleType?.id) {
                 const currentVehicleType = await get(`categories/${id}`);
                 if (currentVehicleType) {
-                    setName(currentVehicleType.name);
-                    setVehicleTypeId(currentVehicleType.id);
+                   
+                    setName(currentVehicleType[0].name);
+                    setVehicleTypeId(currentVehicleType[0].vehicleType.id);
                 }
             }
         }
@@ -50,7 +51,7 @@ function CategoryModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
             await post(`vehicle-types/${vehicleTypeId}/categories`, { name :name }, token); 
             setName('');
         } else {
-            await put(`categories/${id}`, { name: name, id: vehicleTypeId }, token); 
+            await put(`categories/${id}`, { name: name, vehicleTypeId: parseInt(vehicleTypeId) }, token); 
         }
         setVehicleType(null);
         setName('');

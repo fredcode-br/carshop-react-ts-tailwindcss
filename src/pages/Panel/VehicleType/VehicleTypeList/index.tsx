@@ -48,8 +48,7 @@ function VehicleTypeList({ handleNewButton, onSave, vehiclesTypes }: Props) {
 
     const handleConfirm = async () => {
         setIsModaConfirmActionlOpen(false);
-        alert( localStorage.getItem("@Auth:token") );
-        await del(`vehicle-types/${selectedVehicleTypeId}`, localStorage.getItem("@Auth:token") || "");
+        await del(`vehicle-types/${selectedVehicleTypeId}`, sessionStorage.getItem("@App:token") || "");
         onSave();
         setSelectedVehicleTypeId(undefined);
       };
