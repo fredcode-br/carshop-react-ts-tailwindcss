@@ -1,17 +1,36 @@
-interface Props {
-    id: string;
-    options: { id: string; name: string }[];
-    customClass?: string;
+import { ChangeEvent } from "react";
+
+
+interface Option {
+  id: string;
+  name: string;
 }
 
-function Select({ id, options, customClass }: Props) {
-    return (
-        <select id={id} className={`block w-full py-2 px-32 border border-gray-300 rounded-md mb-4 ${customClass}`}>
-            {options.map((option) => (
-                <option key={option.id} value={option.id}>{option.name}</option>
-            ))}
-        </select>
-    );
+interface Props {
+  options: Option[];
+  id: string;
+  label: string;
+  onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
 }
+
+const Select = ({ options, id, label, onChange }: Props) => {
+  return (
+    <div className="mb-4">
+      <select
+        id={id}
+        name={id}
+        className="block w-full py-2 px-32 border border-gray-300 rounded-md mb-4"
+        onChange={onChange}
+      >
+        <option value="">{label}</option>
+        {options.map(option => (
+          <option key={option.id} value={option.id}>
+            {option.name}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
 
 export default Select;
