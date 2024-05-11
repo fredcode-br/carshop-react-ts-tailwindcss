@@ -27,7 +27,7 @@ function Login() {
   }
 
   if (signed) {
-    return <Navigate to="/dashboard" />
+    return <Navigate to="/veiculos" />
   }
 
   return (
@@ -67,7 +67,7 @@ function Login() {
           </div>
           <Button
             type="submit"
-            customClass="bg-gray-400 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            customClass="bg-gray-400 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
           >
             Iniciar sessão
           </Button>

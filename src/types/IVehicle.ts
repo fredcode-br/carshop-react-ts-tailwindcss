@@ -1,7 +1,7 @@
 import IImage from "./IMage";
 
 export default interface IVehicle {
-    id: number;
+    id: string;
     name: string;
     created_at: string;
     model: string;
