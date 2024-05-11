@@ -3,18 +3,19 @@ import { useApi } from "../../../../hooks/useApi";
 import IVehicle from "../../../../types/IVehicle";
 import VehicleCard from "../../../../components/VehicleCard";
 import LinkButton from "../../../../components/LinkButton";
+import { IResponse } from "../../../../types/IRespoonse";
 
 function Stock() {
-    const [vehicles, setVehicles] = useState<Partial<IVehicle[]> | null>(null)
+    const [vehicles, setVehicles] = useState<Partial<IVehicle[]> | null>(null);
     const { get } = useApi();
 
     useEffect(() => {
         const getVehicles = async () => {
             try {
-                if(!vehicles){
-                    const response = await get('vehicles');
-                    if (response) {
-                        setVehicles(response);
+                if (!vehicles) {
+                    const resp: IResponse | null = await get('vehicles?limit=8');
+                    if (resp) {
+                        setVehicles(resp.vehicles)
                     }
                 }
             } catch (error) {
@@ -24,23 +25,23 @@ function Stock() {
 
         getVehicles();
     }, [get, vehicles]);
-    return (  
+
+    return (
         <section id="stock" className="flex flex-col items-center pb-16">
             <h3 className="pb-5 text-center text-xl font-bold uppercase">Procurar por modelo</h3>
             <div className="container mx-auto py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {vehicles !== null ? (
-                    vehicles.slice(0, 8).map((vehicle) => (
+                    vehicles.map((vehicle) => (
                         vehicle && (
-                            <div key={vehicle.id} className="flex justify-center">
-                                <VehicleCard
-                                    id={vehicle.id}
-                                    title={vehicle.name}
-                                    imageUrl={vehicle.images[0].imageUrl}
-                                    price={vehicle.price}
-                                    km={vehicle.km}
-                                    year={vehicle.year}
-                                />
-                            </div>
+                            <VehicleCard
+                                key={vehicle.id}
+                                id={vehicle.id}
+                                title={vehicle.name}
+                                imageUrl={vehicle.images && vehicle.images[0] ? vehicle.images[0].imageUrl : ''} // Verifica se 'vehicle.images' e 'vehicle.images[0]' existem antes de acessar 'imageUrl'
+                                price={vehicle.price}
+                                km={vehicle.km}
+                                year={vehicle.year}
+                            />
                         )
                     ))
                 ) : (

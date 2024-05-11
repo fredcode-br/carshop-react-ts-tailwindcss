@@ -4,18 +4,20 @@ import VehicleCard from '../../../../components/VehicleCard';
 import IVehicle from '../../../../types/IVehicle';
 import { useEffect, useState } from 'react';
 import { useApi } from '../../../../hooks/useApi';
+import { IResponse } from '../../../../types/IRespoonse';
 
 function VehiclesCarousel() {
-  const [vehicles, setVehicles] = useState<Partial<IVehicle[]> | null>(null)
+  const [vehicles, setVehicles] = useState<IVehicle[] | null>(null)
+
   const { get } = useApi();
 
   useEffect(() => {
     const getVehicles = async () => {
       try {
         if (!vehicles) {
-          const response = await get('vehicles');
-          if (response) {
-            setVehicles(response);
+          const resp: IResponse | null = await get('vehicles?limit=4');
+          if (resp) {
+            setVehicles(resp.vehicles)
           }
         }
       } catch (error) {
@@ -25,7 +27,6 @@ function VehiclesCarousel() {
 
     getVehicles();
   }, [get, vehicles]);
-
 
   const responsiveSettings = [
     {
@@ -72,12 +73,13 @@ function VehiclesCarousel() {
         <h3 className="pb-5 text-center text-xl font-bold uppercase">Os Favoritos do Momento</h3>
         <Slider {...settings} className="w-full">
           {vehicles !== null ? (
-            vehicles.slice(0, 4).map((vehicle) => (
+            vehicles.map((vehicle) => (
               vehicle && (
                 <VehicleCard
+                  key={vehicle.id}
                   id={vehicle.id}
                   title={vehicle.name}
-                  imageUrl={vehicle.images[0].imageUrl}
+                  imageUrl={vehicle.images && vehicle.images[0] ? vehicle.images[0].imageUrl : ''} // Verifica se 'vehicle.images' e 'vehicle.images[0]' existem antes de acessar 'imageUrl'
                   price={vehicle.price}
                   km={vehicle.km}
                   year={vehicle.year}
@@ -87,6 +89,7 @@ function VehiclesCarousel() {
           ) : (
             <p>Carregando...</p>
           )}
+
         </Slider>
       </div>
     </section>

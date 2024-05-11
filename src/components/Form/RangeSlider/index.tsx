@@ -3,9 +3,11 @@ import { useState } from 'react';
 interface Props {
     highest: number;
     lowest: number;
+    onLeftValueChange: (value: number) => void;
+    onRightValueChange: (value: number) => void;
 }
 
-function RangeSlider({ highest, lowest }: Props) {
+function RangeSlider({ highest, lowest, onLeftValueChange, onRightValueChange }: Props) {
     const [leftValue, setLeftValue] = useState(0);
     const [rightValue, setRightValue] = useState(100); 
     const [draggingLeft, setDraggingLeft] = useState(false);
@@ -40,6 +42,7 @@ function RangeSlider({ highest, lowest }: Props) {
         percentage = Math.max(0, Math.min(percentage, rightValue));
 
         setLeftValue(percentage);
+        onLeftValueChange((percentage / 100) * (highest - lowest) + lowest);
     };
 
     const handleRightChange = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -50,6 +53,7 @@ function RangeSlider({ highest, lowest }: Props) {
         percentage = Math.min(100, Math.max(percentage, leftValue));
 
         setRightValue(percentage);
+        onRightValueChange((percentage / 100) * (highest - lowest) + lowest);
     };
 
     return (

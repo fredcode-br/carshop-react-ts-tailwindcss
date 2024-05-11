@@ -5,23 +5,23 @@ import { useApi } from '../../../hooks/useApi';
 import Select from '../../../components/Form/Select';
 import IManufacturer from '../../../types/IManufacturer';
 import ICategory from '../../../types/ICategory';
-
-
-interface Pagination {
-    currentPage: number;
-    itemsPerPage: number;
-}
+import { IResponse } from '../../../types/IRespoonse';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Stock() {
     const [vehicles, setVehicles] = useState<Partial<IVehicle[]> | null>(null);
     const [manufacturers, setManufacturers] = useState<Partial<IManufacturer[]> | null>(null);
     const [categories, setCategories] = useState<Partial<ICategory[]> | null>(null);
+
+    const [year, setYear] = useState<number | null>(null);
+    const [manufacturerId, setManufacturerId] = useState<string | null>(null);
+    const [categoryId, setCategoryId] = useState<string | null>(null);
+
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [pagination, setPagination] = useState<Pagination>({
-        currentPage: 1,
-        itemsPerPage: 8,
-    });
+
+    const navigate = useNavigate();
     const { get } = useApi();
+    const location = useLocation();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -38,11 +38,19 @@ function Stock() {
                         setCategories(categoriesResponse);
                     }
                 }
-                if (!vehicles) {
-                    const vehiclesResponse = await get('vehicles');
-                    if (vehiclesResponse) {
-                        setVehicles(vehiclesResponse);
-                    }
+
+                // Parse URL parameters and set state
+                const params = new URLSearchParams(location.search);
+                setYear(params.get('year') ? parseInt(params.get('year') as string, 10) : null);
+                setManufacturerId(params.get('manufacturerId'));
+                setCategoryId(params.get('categoryId'));
+                setSearchTerm(params.get('searchTerm') || '');
+
+                // Construct URL with query parameters and fetch vehicles
+                const url = `/vehicles?${params.toString()}&limit=2`;
+                const vehiclesResponse: IResponse = await get(url);
+                if (vehiclesResponse) {
+                    setVehicles(vehiclesResponse.vehicles);
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -50,23 +58,31 @@ function Stock() {
         };
 
         fetchData();
-    }, [get, manufacturers, categories, vehicles]);
+    }, [get, manufacturers, categories, location.search]);
 
     const applyFilters = () => {
-        // Implement filter logic
+        let query = "";
+
+        if (manufacturerId) {
+
+            query += `manufacturerId=${manufacturerId}&`;
+        }
+        if (categoryId) {
+            query += `categoryId=${categoryId}&`;
+        }
+        if (year) {
+            query += `year=${year}&`;
+        }
+        if (searchTerm) {
+            query += `searchTerm=${searchTerm}&`;
+        }
+
+        query = query.slice(0, -1);
+
+        const url = `/estoque?${query}&page=1`;
+        alert(year);
+        // navigate(url);
     };
-
-    const handlePageChange = (page: number): void => {
-        setPagination({ ...pagination, currentPage: page });
-    };
-
-    const filteredVehiclesBySearch = vehicles?.filter(vehicle =>
-        vehicle?.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage;
-    const endIndex = startIndex + pagination.itemsPerPage;
-    const paginatedCars = filteredVehiclesBySearch?.slice(startIndex, endIndex);
 
     const currentYear = new Date().getFullYear();
     const yearsArray = Array.from({ length: currentYear - 1999 }, (_, i) => String(currentYear - i));
@@ -81,21 +97,21 @@ function Stock() {
                         id="manufacturer"
                         label="Fabricante"
                         options={(manufacturers || []).map(manufacturer => ({ id: manufacturer?.id || '', name: manufacturer?.name || '' }))}
-                        onChange={(e) => console.log(e.target.value)}
+                        onChange={(e) => setManufacturerId(e.target.value)}
                         customClass="mb-0"
                     />
                     <Select
                         id="category"
                         label="Categoria"
                         options={(categories || []).map(category => ({ id: category?.id || '', name: category?.name || '' }))}
-                        onChange={(e) => console.log(e.target.value)}
+                        onChange={(e) => setCategoryId(e.target.value)}
                         customClass="mb-0"
                     />
                     <Select
                         id="year"
                         label="Ano"
                         options={yearsArray.map(year => ({ id: year, name: year }))}
-                        onChange={(e) => console.log(e.target.value)}
+                        onChange={(e) => setYear(Number(e.target.value))}
                         customClass="mb-0"
                     />
                 </div>
@@ -112,14 +128,14 @@ function Stock() {
             </div>
 
             <div id="stock" className="mx-auto py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {paginatedCars !== undefined ? (
-                    paginatedCars.map((vehicle) => (
+                {vehicles !== null ? (
+                    vehicles.map((vehicle) => (
                         vehicle && (
                             <div key={vehicle.id} className="flex justify-center">
                                 <VehicleCard
                                     id={vehicle.id}
                                     title={vehicle.name}
-                                    imageUrl={vehicle.images[0].imageUrl}
+                                    imageUrl={vehicle.images && vehicle.images[0] ? vehicle.images[0].imageUrl : ''}
                                     price={vehicle.price}
                                     km={vehicle.km}
                                     year={vehicle.year}
@@ -130,18 +146,6 @@ function Stock() {
                 ) : (
                     <p>Carregando...</p>
                 )}
-            </div>
-
-            <div className="flex justify-center mt-4">
-                {filteredVehiclesBySearch !== undefined && (Array.from({ length: Math.ceil(filteredVehiclesBySearch.length / pagination.itemsPerPage) }).map((_, index) => (
-                    <button
-                        key={index}
-                        onClick={() => handlePageChange(index + 1)}
-                        className={`mx-2 p-2 rounded-md ${index + 1 === pagination.currentPage ? 'bg-black text-white' : 'bg-gray-200'}`}
-                    >
-                        {index + 1}
-                    </button>
-                )))}
             </div>
         </div>
     );
