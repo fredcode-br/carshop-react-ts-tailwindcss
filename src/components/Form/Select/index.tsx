@@ -1,6 +1,5 @@
 import { ChangeEvent } from "react";
 
-
 interface Option {
   id: string;
   name: string;
@@ -20,7 +19,7 @@ const Select = ({ customClass, options, id, label, onChange }: Props) => {
       <select
         id={id}
         name={id}
-        className={`block w-full py-2 px-32 border border-gray-300 rounded-md mb-4 ${customClass}`}
+        className={`block py-2 px-4 border border-gray-300 rounded-md mb-4 w-full ${customClass}`}
         onChange={onChange}
       >
         <option value="">{label}</option>
