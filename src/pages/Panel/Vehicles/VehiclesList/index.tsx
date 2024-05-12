@@ -1,17 +1,17 @@
+import { useState } from 'react';
+import { useApi } from '../../../../hooks/useApi';
 import { TrashIcon, PencilIcon } from '@heroicons/react/24/solid';
-import TableHead from "../../../../components/Table/TableHead";
-import TableRow from "../../../../components/Table/TableRow";
 import Table from "../../../../components/Table";
 import TableHeader from "../../../../components/Table/TableHeader";
+import TableHead from "../../../../components/Table/TableHead";
 import TableBody from "../../../../components/Table/TableBody";
+import TableRow from "../../../../components/Table/TableRow";
 import TableCell from "../../../../components/Table/TableCell";
 import Button from "../../../../components/Button";
 import defaultVehicle from "../../../../assets/img/defaultcar.jpg"
 import IVehicle from "../../../../types/IVehicle";
-import ManufacturerModal from '../VehicleModal';
 import ConfirmAction from '../../../../components/ConfirmAction';
-import { useApi } from '../../../../hooks/useApi';
-import { useState } from 'react';
+import VehicleModal from '../VehicleModal';
 
 interface Props {
     handleNewButton: (e: React.MouseEvent<HTMLButtonElement>) => void,
@@ -20,19 +20,19 @@ interface Props {
 }
 
 function VehicleList({ handleNewButton, onSave, vehicles }: Props) {
-    const [isModalManufacturerOpen, setIsModalManufacturerOpen] = useState(false);
+    const [isModalVehicleOpen, setIsModalVehicleOpen] = useState(false);
     const [isModaConfirmActionlOpen, setIsModaConfirmActionlOpen] = useState(false);
-    const [selectedManufacturerId, setSelectedManufacturerId] = useState<string | undefined>(undefined);
+    const [selectedVehicleId, setSelectedVehicleId] = useState<string | undefined>(undefined);
     const { del } = useApi();
 
     const handleDelete = (id: string) => {
-        setSelectedManufacturerId(id);
+        setSelectedVehicleId(id);
         setIsModaConfirmActionlOpen(true);
     }
 
     const handleEdit = (id: string) => {
-        setSelectedManufacturerId(id);
-        setIsModalManufacturerOpen(true);
+        setSelectedVehicleId(id);
+        setIsModalVehicleOpen(true);
     }
 
     const handleSaveSuccess = async () => {
@@ -40,21 +40,21 @@ function VehicleList({ handleNewButton, onSave, vehicles }: Props) {
     }
 
 
-    const handleCloseModalManufacturer = async () => {
-        setIsModalManufacturerOpen(false);
-        setSelectedManufacturerId(undefined);
+    const handleCloseModalVehicle = async () => {
+        setIsModalVehicleOpen(false);
+        setSelectedVehicleId(undefined);
     }
 
     const handleConfirm = async () => {
         setIsModaConfirmActionlOpen(false);
-        await del(`manufacturers/${selectedManufacturerId}`, sessionStorage.getItem("@App:token") || "");
+        await del(`vehicles/${selectedVehicleId}`, sessionStorage.getItem("@App:token") || "");
         onSave();
-        setSelectedManufacturerId(undefined);
+        setSelectedVehicleId(undefined);
     };
 
     const handleCloseModalConfirmAction = async () => {
         setIsModaConfirmActionlOpen(false);
-        setSelectedManufacturerId(undefined);
+        setSelectedVehicleId(undefined);
     };
 
     return (
@@ -120,10 +120,10 @@ function VehicleList({ handleNewButton, onSave, vehicles }: Props) {
                 </div>
             )}
 
-            <ManufacturerModal
-                isOpen={isModalManufacturerOpen}
-                onClose={handleCloseModalManufacturer}
-                id={selectedManufacturerId}
+            <VehicleModal
+                isOpen={isModalVehicleOpen}
+                onClose={handleCloseModalVehicle}
+                id={selectedVehicleId}
                 onSaveSuccess={handleSaveSuccess}
             />
 
