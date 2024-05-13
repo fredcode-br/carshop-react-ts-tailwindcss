@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import PanelSearchBar from "../../../components/PanelSearchBar";
+// import PanelSearchBar from "../../../components/PanelSearchBar";
 import Button from "../../../components/Button";
 import VehicleTypeModal from "./VehicleTypeModal";
 import VehicleTypeList from "./VehicleTypeList";
@@ -47,10 +47,10 @@ function VehicleType() {
     return (
         <div className="h-full flex flex-col">
             <h1 className="text-3xl font-semibold text-gray-600">Tipos de Veículos</h1>
-            <form action="">
+            {/* <form action="">
                 <PanelSearchBar placeholder="Nome, Marca, Ano, ..." />
                 <div className="flex justify-between"></div>
-            </form>
+            </form> */}
             <Button
                 customClass="mt-5 w-44"
                 handleClick={handleNew}

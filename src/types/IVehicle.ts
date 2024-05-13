@@ -19,5 +19,8 @@ export default interface IVehicle {
     status: string;
     views: number;
     images: IImage[];
+    vehicleTypeId: string;
+    categoryId: string;
+    manufacturerId: string;
 }
 

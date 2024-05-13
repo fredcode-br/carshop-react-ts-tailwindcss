@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
 import CustomInput from "./CustomInput";
+import IVehicle from "../../../../types/IVehicle";
+import { useApi } from "../../../../hooks/useApi";
+import IVehicleType from "../../../../types/IVehicleType";
+import ICategory from "../../../../types/ICategory";
 
 interface Props {
     id?: string;
@@ -11,24 +15,75 @@ interface Props {
 
 function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
     const [step, setStep] = useState(1);
-
-    const [name, setName] = useState<string>('');
-    const [model, setModel] = useState<string>('');
-    const [price, setPrice] = useState<number>(0);
-    const [year, setYear] = useState<number>(0);
-    const [km, setKm] = useState<number>(0);
-    const [engine, setEngine] = useState<string>('');
-    const [color, setColor] = useState<string>('');
-    const [plate, setPlate] = useState<string>('');
-    const [gearbox, setGearbox] = useState<string>('');
-    const [fuel, setFuel] = useState<string>('');
-    const [doorsNumber, setDoorsNumber] = useState<number>(0);
-    const [optionals, setOptionals] = useState<string>('');
-    const [comments, setComments] = useState<string>('');
-    const [status, setStatus] = useState<string>('');
-
     const [images, setImages] = useState<File[]>([]);
+    const token = sessionStorage.getItem("@App:token") || "";
+    const [vehicle, setVehicle] = useState<IVehicle>({
+        id: '',
+        name: '',
+        created_at: '',
+        model: '',
+        price: 0,
+        year: 0,
+        km: 0,
+        engine: '',
+        color: '',
+        plate: '',
+        gearbox: '',
+        fuel: '',
+        doorsNumber: 0,
+        optionals: '',
+        comments: '',
+        status: '',
+        views: 0,
+        images: [],
+        vehicleTypeId: '',
+        categoryId: '',
+        manufacturerId: '',
+    });
+    const [vehicleTypeId, setVehicleTypeId] = useState<string>('');
+    const [vehiclesTypes, setVehiclesTypes] = useState<IVehicleType[] | null>(null);
 
+    const [categoryId, setCategoryId] = useState<string>('');
+    const [categories, setCategories] = useState<ICategory[] | null>(null);
+    const { get } = useApi();
+
+    useEffect(() => {
+        const getVehicle = async () => {
+            if (id && id !== vehicle?.id) {
+                const currentVehicle = await get(`vehicles/${id}`);
+                if (currentVehicle) {
+                    await setVehicle(currentVehicle);
+                }
+            }
+        }
+
+        getVehicle();
+    }, [id, get, vehicle]);
+
+    
+    useEffect(() => {
+        const getVehiclesTypes = async () => {
+            if (!vehiclesTypes) {
+                const resp: IVehicleType[] = await get('vehicle-types');
+                if (resp) {
+                    await setVehiclesTypes(resp);
+                }
+            }
+        }
+        getVehiclesTypes();
+    }, [get, vehiclesTypes]);
+
+    useEffect(() => {
+        const getCategories = async () => {
+            if (!categories) {
+                const resp: ICategory[] = await get(`categories/${id}`);
+                if (resp) {
+                    await setCategories(resp);
+                }
+            }
+        }
+        getCategories();
+    }, [get, categories, id]);
 
     const handleNextStep = () => {
         setStep(step + 1);
@@ -47,11 +102,11 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         onClose();
     };
 
-    const onDrop = (acceptedFiles: File[]) => {
-        const newImages = [...images, ...acceptedFiles];
-        setImages(newImages.slice(0, 6)); // Limite de 6 imagens
-    };
-    
+    // const onDrop = (acceptedFiles: File[]) => {
+    //     const newImages = [...images, ...acceptedFiles];
+    //     setImages(newImages.slice(0, 6)); // Limite de 6 imagens
+    // };
+
     const handleRemoveImage = (index: number) => {
         const updatedImages = [...images];
         updatedImages.splice(index, 1);
@@ -72,31 +127,32 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                                     <CustomInput
                                         id="vehicleName"
                                         label="Nome"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
+                                        value={vehicle.name}
+                                        onChange={(e) => setVehicle({ ...vehicle, name: e.target.value })}
                                         type="text"
                                     />
                                     <CustomInput
                                         id="vehicleModel"
                                         label="Modelo"
-                                        value={model}
-                                        onChange={(e) => setModel(e.target.value)}
+                                        value={vehicle.model}
+                                        onChange={(e) => setVehicle({ ...vehicle, model: e.target.value })}
                                         type="text"
                                     />
                                     <CustomInput
                                         id="vehiclePrice"
                                         label="Preço"
-                                        value={price}
-                                        onChange={(e) => setPrice(Number(e.target.value))}
+                                        value={vehicle.price}
+                                        onChange={(e) => setVehicle({ ...vehicle, price: Number(e.target.value) })}
                                         type="number"
                                     />
                                     <CustomInput
                                         id="vehicleYear"
                                         label="Ano"
-                                        value={year}
-                                        onChange={(e) => setYear(Number(e.target.value))}
+                                        value={vehicle.year}
+                                        onChange={(e) => setVehicle({ ...vehicle, year: Number(e.target.value) })}
                                         type="number"
                                     />
+
 
                                 </div>
                             </>
@@ -108,29 +164,29 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                                     <CustomInput
                                         id="vehicleColor"
                                         label="Cor"
-                                        value={color}
-                                        onChange={(e) => setColor(e.target.value)}
+                                        value={vehicle.color}
+                                        onChange={(e) => setVehicle({ ...vehicle, color: e.target.value })}
                                         type="text"
                                     />
                                     <CustomInput
                                         id="vehicleDoors"
                                         label="Número de Portas"
-                                        value={doorsNumber}
-                                        onChange={(e) => setDoorsNumber(Number(e.target.value))}
+                                        value={vehicle.doorsNumber}
+                                        onChange={(e) => setVehicle({ ...vehicle, doorsNumber: Number(e.target.value) })}
                                         type="number"
                                     />
                                     <CustomInput
                                         id="vehicleKm"
                                         label="Km"
-                                        value={km}
-                                        onChange={(e) => setKm(Number(e.target.value))}
+                                        value={vehicle.km}
+                                        onChange={(e) => setVehicle({ ...vehicle, km: Number(e.target.value) })}
                                         type="number"
                                     />
                                     <CustomInput
                                         id="vehiclePlate"
                                         label="Placa"
-                                        value={plate}
-                                        onChange={(e) => setPlate(e.target.value)}
+                                        value={vehicle.plate}
+                                        onChange={(e) => setVehicle({ ...vehicle, plate: e.target.value })}
                                         type="text"
                                     />
                                 </div>
@@ -142,33 +198,45 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                                 <CustomInput
                                     id="vehicleEngine"
                                     label="Motor"
-                                    value={engine}
-                                    onChange={(e) => setEngine(e.target.value)}
+                                    value={vehicle.engine}
+                                    onChange={(e) => setVehicle({ ...vehicle, engine: e.target.value })}
                                     type="text"
                                 />
                                 <CustomInput
                                     id="vehicleGearbox"
                                     label="Câmbio"
-                                    value={gearbox}
-                                    onChange={(e) => setGearbox(e.target.value)}
+                                    value={vehicle.gearbox}
+                                    onChange={(e) => setVehicle({ ...vehicle, gearbox: e.target.value })}
                                     type="text"
                                 />
                                 <CustomInput
                                     id="vehicleFuel"
                                     label="Combustível"
-                                    value={fuel}
-                                    onChange={(e) => setFuel(e.target.value)}
+                                    value={vehicle.fuel}
+                                    onChange={(e) => setVehicle({ ...vehicle, fuel: e.target.value })}
                                     type="text"
                                 />
                                 <select
                                     id="vehicleStatus"
-                                    value={status}
-                                    onChange={(e) => setStatus(e.target.value)}
+                                    value={vehicle.status}
+                                    onChange={(e) => setVehicle({ ...vehicle, status: e.target.value })}
                                     className="w-full border border-gray-300 rounded px-3 py-2"
                                 >
                                     <option value="Disponível">Disponível</option>
                                     <option value="Desativado">Desativado</option>
                                     <option value="Vendido">Vendido</option>
+                                </select>
+                                <select
+                                    id="vehicleTypeId"
+                                    value={vehicleTypeId}
+                                    onChange={(e) => setVehicleTypeId(e.target.value)}
+                                    className="w-full border border-gray-300 rounded px-3 py-2"
+                                >
+                                    <option value="">Selecione um Opção</option>
+                                    {vehiclesTypes && (vehiclesTypes.map((val,i)=>
+                                    (<option key={i} value={val.id}>{val.name}</option>)
+                                    ))} 
+                                
                                 </select>
                             </>
                         )}
@@ -180,8 +248,8 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                                     <textarea
                                         name="vehicleOptionals"
                                         id="vehicleOptionals"
-                                        value={optionals}
-                                        onChange={(e) => setOptionals(e.target.value)}
+                                        value={vehicle.optionals}
+                                        onChange={(e) => setVehicle({ ...vehicle, optionals: e.target.value })}
                                         className="w-full border border-gray-300 rounded px-3 py-2 h-24"
                                     />
                                 </div>
@@ -190,8 +258,8 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                                     <textarea
                                         name="vehicleComments"
                                         id="vehicleComments"
-                                        value={comments}
-                                        onChange={(e) => setComments(e.target.value)}
+                                        value={vehicle.comments}
+                                        onChange={(e) => setVehicle({ ...vehicle, comments: e.target.value })}
                                         className="w-full border border-gray-300 rounded px-3 py-2 h-24"
                                     />
                                 </div>
