@@ -7,25 +7,25 @@ import ICategory from "../../../types/ICategory";
 import Button from "../../../components/Button";
 
 function Categories() {
-    const [vehiclesTypes, setVehiclesTypes] = useState<ICategory[] | null>(null);
+    const [categories, setCategories] = useState<ICategory[] | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { get } = useApi();
 
 
     useEffect(() => {
-        const getVehiclesTypes = async () => {
-            if (!vehiclesTypes) {
+        const getCategories = async () => {
+            if (!categories) {
                 try {
                     const resp = await get("categories/");
-                    setVehiclesTypes(resp);
+                    setCategories(resp);
                 } catch (error) {
                     console.error('Erro ao obter tipos de veículos:', error);
                 }
             }
         }
 
-        getVehiclesTypes();
-    }, [get, vehiclesTypes]);
+        getCategories();
+    }, [get, categories]);
 
 
 
@@ -36,7 +36,7 @@ function Categories() {
 
     const handleSaveSuccess = async () => {
         const resp = await get("categories/");
-        setVehiclesTypes(resp);
+        setCategories(resp);
     }
 
 
@@ -65,7 +65,7 @@ function Categories() {
             />
 
             <CategoryList 
-                vehiclesTypes={vehiclesTypes} 
+                categories={categories} 
                 handleNewButton={handleNew} 
                 onSave={handleSaveSuccess} 
             />
