@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import PanelSearchBar from "../../../components/PanelSearchBar";
+// import PanelSearchBar from "../../../components/PanelSearchBar";
 import { useApi } from "../../../hooks/useApi";
 import CategoryList from "./CategoryList";
 import CategoryModal from "./CategoryModal";
@@ -47,10 +47,10 @@ function Categories() {
     return (
         <div className="h-full flex flex-col">
             <h1 className="text-3xl font-semibold text-gray-600">Categorias</h1>
-            <form action="">
+            {/* <form action="">
                 <PanelSearchBar placeholder="Nome..." />
                 <div className="flex justify-between"></div>
-            </form>
+            </form> */}
             <Button
                 customClass="mt-5 w-44"
                 handleClick={handleNew}
