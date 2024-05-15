@@ -10,7 +10,7 @@ function Vehicle() {
     const { id } = useParams<string>();
     const [vehicle, setVehicle] = useState<IVehicle | null>(null);
     const [currentId, setCurrentId] = useState<string | null>(null);
-    const { get } = useApi();
+    const { get, post } = useApi();
 
     useEffect(() => {
         if (id && id !== currentId) {
@@ -22,13 +22,21 @@ function Vehicle() {
                         setCurrentId(id);
                     }
                 } catch (error) {
-                    console.error('Erro ao obter veículos:', error);
+                    console.error('Erro ao obter veículo:', error);
+                }
+            };
+            const incrementView = async () => {
+                try {
+                    await post(`vehicles/${id}/increment`);
+                } catch (error) {
+                    console.error('Erro ao adicionar visualização ao veículo:', error);
                 }
             };
 
             getVehicle();
+            incrementView();
         }
-    }, [get, id, currentId]);
+    }, [get, post, id, currentId]);
 
     return (
         <>

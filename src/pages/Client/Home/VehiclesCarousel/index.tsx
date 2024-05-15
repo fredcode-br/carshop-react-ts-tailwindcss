@@ -15,7 +15,7 @@ function VehiclesCarousel() {
     const getVehicles = async () => {
       try {
         if (!vehicles) {
-          const resp: IResponse | null = await get('vehicles?limit=4');
+          const resp: IResponse | null = await get('vehicles?sortBy=views&limit=4');
           if (resp) {
             setVehicles(resp.vehicles)
           }
@@ -77,9 +77,9 @@ function VehiclesCarousel() {
               vehicle && (
                 <VehicleCard
                   key={vehicle.id}
-                  id={vehicle.id}
+                  id={Number(vehicle.id)}
                   title={vehicle.name}
-                  imageUrl={vehicle.images && vehicle.images[0] ? vehicle.images[0].imageUrl : ''} // Verifica se 'vehicle.images' e 'vehicle.images[0]' existem antes de acessar 'imageUrl'
+                  imageUrl={vehicle.images && vehicle.images[0] ? vehicle.images[0].imageUrl : ''}
                   price={vehicle.price}
                   km={vehicle.km}
                   year={vehicle.year}

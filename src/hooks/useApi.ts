@@ -37,7 +37,7 @@ export const useApi = () => ({
         }
     },
 
-    post: async (endpoint: string, body: object, token?: string, customHeaders?: Record<string, string>) => {
+    post: async (endpoint: string, body?: object, token?: string, customHeaders?: Record<string, string>) => {
         try {
             const headers: Record<string, string> = {}; 
             

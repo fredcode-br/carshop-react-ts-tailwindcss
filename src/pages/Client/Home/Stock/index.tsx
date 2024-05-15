@@ -13,9 +13,9 @@ function Stock() {
         const getVehicles = async () => {
             try {
                 if (!vehicles) {
-                    const resp: IResponse | null = await get('vehicles?limit=8');
+                    const resp: IResponse | null = await get('vehicles?status=Disponível&limit=8');
                     if (resp) {
-                        setVehicles(resp.vehicles)
+                        setVehicles(resp.vehicles) 
                     }
                 }
             } catch (error) {
@@ -35,7 +35,7 @@ function Stock() {
                         vehicle && (
                             <VehicleCard
                                 key={vehicle.id}
-                                id={vehicle.id}
+                                id={Number(vehicle.id)}
                                 title={vehicle.name}
                                 imageUrl={vehicle.images && vehicle.images[0] ? vehicle.images[0].imageUrl : ''} // Verifica se 'vehicle.images' e 'vehicle.images[0]' existem antes de acessar 'imageUrl'
                                 price={vehicle.price}

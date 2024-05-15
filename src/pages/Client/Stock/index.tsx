@@ -47,7 +47,7 @@ function Stock() {
                 setSearchTerm(params.get('searchTerm') || '');
 
                 // Construct URL with query parameters and fetch vehicles
-                const url = `/vehicles?${params.toString()}&limit=2`;
+                const url = `/vehicles?${params.toString()}&limit=2&status=Disponível`;
                 const vehiclesResponse: IResponse = await get(url);
                 if (vehiclesResponse) {
                     setVehicles(vehiclesResponse.vehicles);
@@ -77,11 +77,12 @@ function Stock() {
             query += `searchTerm=${searchTerm}&`;
         }
 
+        query += "status=Disponível&";
         query = query.slice(0, -1);
 
         const url = `/estoque?${query}&page=1`;
         alert(year);
-        // navigate(url);
+        navigate(url);
     };
 
     const currentYear = new Date().getFullYear();
@@ -133,7 +134,7 @@ function Stock() {
                         vehicle && (
                             <div key={vehicle.id} className="flex justify-center">
                                 <VehicleCard
-                                    id={vehicle.id}
+                                    id={Number(vehicle.id)}
                                     title={vehicle.name}
                                     imageUrl={vehicle.images && vehicle.images[0] ? vehicle.images[0].imageUrl : ''}
                                     price={vehicle.price}
