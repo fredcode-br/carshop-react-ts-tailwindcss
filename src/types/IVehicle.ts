@@ -1,4 +1,7 @@
+import ICategory from "./ICategory";
 import IImage from "./IMage";
+import IManufacturer from "./IManufacturer";
+import IVehicleType from "./IVehicleType";
 
 export default interface IVehicle {
     id: string;
@@ -19,8 +22,8 @@ export default interface IVehicle {
     status: string;
     views: number;
     images: IImage[];
-    vehicleTypeId: string;
-    categoryId: string;
-    manufacturerId: string;
+    vehicleType?: IVehicleType | null;
+    category?: ICategory | null;
+    manufacturer?: IManufacturer  | null;
 }
 

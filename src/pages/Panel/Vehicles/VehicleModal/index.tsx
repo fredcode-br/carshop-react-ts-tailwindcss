@@ -5,6 +5,7 @@ import IVehicle from "../../../../types/IVehicle";
 import { useApi } from "../../../../hooks/useApi";
 import IVehicleType from "../../../../types/IVehicleType";
 import ICategory from "../../../../types/ICategory";
+import CustomSelect from "./CustomSelect";
 
 interface Props {
     id?: string;
@@ -16,7 +17,7 @@ interface Props {
 function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
     const [step, setStep] = useState(1);
     const [images, setImages] = useState<File[]>([]);
-    const token = sessionStorage.getItem("@App:token") || "";
+    // const token = sessionStorage.getItem("@App:token") || "";
     const [vehicle, setVehicle] = useState<IVehicle>({
         id: '',
         name: '',
@@ -36,31 +37,42 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         status: '',
         views: 0,
         images: [],
-        vehicleTypeId: '',
-        categoryId: '',
-        manufacturerId: '',
+        vehicleType: null,
+        category: null,
+        manufacturer: null,
     });
-    const [vehicleTypeId, setVehicleTypeId] = useState<string>('');
     const [vehiclesTypes, setVehiclesTypes] = useState<IVehicleType[] | null>(null);
-
-    const [categoryId, setCategoryId] = useState<string>('');
     const [categories, setCategories] = useState<ICategory[] | null>(null);
+
+    const [vehicleTypeId, setVehicleTypeId] = useState<string>('');
+    const [categoryId, setCategoryId] = useState<string>('');
+    const [manufacturerId, setManufacturerId] = useState<string>('');
+
     const { get } = useApi();
 
     useEffect(() => {
         const getVehicle = async () => {
             if (id && id !== vehicle?.id) {
-                const currentVehicle = await get(`vehicles/${id}`);
+                const currentVehicle: IVehicle = await get(`vehicles/${id}`);
                 if (currentVehicle) {
                     await setVehicle(currentVehicle);
+                    if (currentVehicle.vehicleType) {
+                        await setVehicleTypeId(currentVehicle.vehicleType?.id)
+                    }
+                    if (currentVehicle.manufacturer) {
+                        await setManufacturerId(currentVehicle.manufacturer?.id)
+                    }
+                    if (currentVehicle.category) {
+                        await setCategoryId(currentVehicle.category?.id)
+                    }
                 }
             }
-        }
+        };
 
         getVehicle();
     }, [id, get, vehicle]);
 
-    
+
     useEffect(() => {
         const getVehiclesTypes = async () => {
             if (!vehiclesTypes) {
@@ -75,15 +87,15 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
 
     useEffect(() => {
         const getCategories = async () => {
-            if (!categories) {
-                const resp: ICategory[] = await get(`categories/${id}`);
+            if (!categories && vehicleTypeId !== "") {
+                const resp: ICategory[] = await get(`/vehicle-types/${vehicleTypeId}/categories/`);
                 if (resp) {
                     await setCategories(resp);
                 }
             }
         }
         getCategories();
-    }, [get, categories, id]);
+    }, [get, categories, vehicleTypeId, id]);
 
     const handleNextStep = () => {
         setStep(step + 1);
@@ -112,7 +124,6 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         updatedImages.splice(index, 1);
         setImages(updatedImages);
     };
-
 
     return (
         <>
@@ -161,34 +172,53 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                             <>
                                 <div>
                                     <h2 className="text-xl font-semibold mb-4">Detalhes Adicionais</h2>
-                                    <CustomInput
-                                        id="vehicleColor"
-                                        label="Cor"
-                                        value={vehicle.color}
-                                        onChange={(e) => setVehicle({ ...vehicle, color: e.target.value })}
-                                        type="text"
+                                    <div className="w-full flex justify-between">
+                                        <CustomInput
+                                            id="vehicleColor"
+                                            label="Cor"
+                                            value={vehicle.color}
+                                            onChange={(e) => setVehicle({ ...vehicle, color: e.target.value })}
+                                            type="text"
+                                        />
+                                        <CustomInput
+                                            id="vehicleDoors"
+                                            label="Número de Portas"
+                                            value={vehicle.doorsNumber}
+                                            onChange={(e) => setVehicle({ ...vehicle, doorsNumber: Number(e.target.value) })}
+                                            type="number"
+                                        />
+                                    </div>
+                                    <div className="w-full flex justify-between">
+                                        <CustomInput
+                                            id="vehicleKm"
+                                            label="Km"
+                                            value={vehicle.km}
+                                            onChange={(e) => setVehicle({ ...vehicle, km: Number(e.target.value) })}
+                                            type="number"
+                                        />
+                                        <CustomInput
+                                            id="vehiclePlate"
+                                            label="Placa"
+                                            value={vehicle.plate}
+                                            onChange={(e) => setVehicle({ ...vehicle, plate: e.target.value })}
+                                            type="text"
+                                        />
+                                    </div>
+                                    <CustomSelect
+                                        id="vehicleTypeId"
+                                        label="Tipo de Veículo"
+                                        value={vehicleTypeId}
+                                        onChange={(e) => setVehicleTypeId(e.target.value)}
+                                        options={vehiclesTypes}
                                     />
-                                    <CustomInput
-                                        id="vehicleDoors"
-                                        label="Número de Portas"
-                                        value={vehicle.doorsNumber}
-                                        onChange={(e) => setVehicle({ ...vehicle, doorsNumber: Number(e.target.value) })}
-                                        type="number"
+                                    <CustomSelect
+                                        id="categoryId"
+                                        label="Categoria"
+                                        value={categoryId}
+                                        onChange={(e) => setCategoryId(e.target.value)}
+                                        options={categories}
                                     />
-                                    <CustomInput
-                                        id="vehicleKm"
-                                        label="Km"
-                                        value={vehicle.km}
-                                        onChange={(e) => setVehicle({ ...vehicle, km: Number(e.target.value) })}
-                                        type="number"
-                                    />
-                                    <CustomInput
-                                        id="vehiclePlate"
-                                        label="Placa"
-                                        value={vehicle.plate}
-                                        onChange={(e) => setVehicle({ ...vehicle, plate: e.target.value })}
-                                        type="text"
-                                    />
+
                                 </div>
                             </>
                         )}
@@ -216,28 +246,17 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                                     onChange={(e) => setVehicle({ ...vehicle, fuel: e.target.value })}
                                     type="text"
                                 />
-                                <select
+                                <CustomSelect
                                     id="vehicleStatus"
+                                    label="Status"
                                     value={vehicle.status}
                                     onChange={(e) => setVehicle({ ...vehicle, status: e.target.value })}
-                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                >
-                                    <option value="Disponível">Disponível</option>
-                                    <option value="Desativado">Desativado</option>
-                                    <option value="Vendido">Vendido</option>
-                                </select>
-                                <select
-                                    id="vehicleTypeId"
-                                    value={vehicleTypeId}
-                                    onChange={(e) => setVehicleTypeId(e.target.value)}
-                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                >
-                                    <option value="">Selecione um Opção</option>
-                                    {vehiclesTypes && (vehiclesTypes.map((val,i)=>
-                                    (<option key={i} value={val.id}>{val.name}</option>)
-                                    ))} 
-                                
-                                </select>
+                                    options={[
+                                        { id: "Disponível", name: "Disponível" },
+                                        { id: "Desativado", name: "Desativado" },
+                                        { id: "Vendido", name: "Vendido" },
+                                    ]}
+                                />
                             </>
                         )}
                         {step === 4 && (
