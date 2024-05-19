@@ -6,7 +6,7 @@ import Select from '../../../components/Form/Select';
 import IManufacturer from '../../../types/IManufacturer';
 import ICategory from '../../../types/ICategory';
 import { IResponse } from '../../../types/IRespoonse';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 function Stock() {
     const [vehicles, setVehicles] = useState<Partial<IVehicle[]> | null>(null);
@@ -19,7 +19,7 @@ function Stock() {
 
     const [searchTerm, setSearchTerm] = useState<string>('');
 
-    const navigate = useNavigate();
+   
     const { get } = useApi();
     const location = useLocation();
 
@@ -41,16 +41,20 @@ function Stock() {
 
                 // Parse URL parameters and set state
                 const params = new URLSearchParams(location.search);
-                setYear(params.get('year') ? parseInt(params.get('year') as string, 10) : null);
-                setManufacturerId(params.get('manufacturerId'));
-                setCategoryId(params.get('categoryId'));
-                setSearchTerm(params.get('searchTerm') || '');
+                setYear(params.get('year') ? parseInt(params.get('year') as string, 10) : year);
+                setManufacturerId(params.get('manufacturerId') || manufacturerId);
+                setCategoryId(params.get('categoryId') || categoryId);
+                setSearchTerm(params.get('searchTerm') || searchTerm);
 
                 // Construct URL with query parameters and fetch vehicles
                 const url = `/vehicles?${params.toString()}&limit=2&status=Disponível`;
                 const vehiclesResponse: IResponse = await get(url);
                 if (vehiclesResponse) {
                     setVehicles(vehiclesResponse.vehicles);
+                    setYear(null);
+                    setManufacturerId(null);
+                    setCategoryId(null);
+                    setSearchTerm('');
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -58,31 +62,36 @@ function Stock() {
         };
 
         fetchData();
-    }, [get, manufacturers, categories, location.search]);
+    }, [location.search]);
 
-    const applyFilters = () => {
+
+    const applyFilters = async () => {
         let query = "";
 
         if (manufacturerId) {
-
-            query += `manufacturerId=${manufacturerId}&`;
+            query += `manufacturerId=${manufacturerId}`;
+            query += '&';
         }
         if (categoryId) {
-            query += `categoryId=${categoryId}&`;
+            query += `categoryId=${categoryId}`;
+            query += '&';
         }
         if (year) {
-            query += `year=${year}&`;
+            query += `year=${year}`;
+            query += '&';
         }
         if (searchTerm) {
             query += `searchTerm=${searchTerm}&`;
         }
 
-        query += "status=Disponível&";
         query = query.slice(0, -1);
-
-        const url = `/estoque?${query}&page=1`;
-        alert(year);
-        navigate(url);
+        query += "&page=1";
+        const url = `/vehicles?${query}`;      
+        const vehiclesResponse: IResponse = await get(url);
+         if (vehiclesResponse) {
+             setVehicles(vehiclesResponse.vehicles);
+         }
+        
     };
 
     const currentYear = new Date().getFullYear();
@@ -129,7 +138,9 @@ function Stock() {
             </div>
 
             <div id="stock" className="mx-auto py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {vehicles !== null ? (
+                {vehicles !== null ? 
+                (
+                    vehicles.length > 0 ?
                     vehicles.map((vehicle) => (
                         vehicle && (
                             <div key={vehicle.id} className="flex justify-center">
@@ -143,9 +154,11 @@ function Stock() {
                                 />
                             </div>
                         )
-                    ))
+                    )) : <p><strong> Nenhum Veículo Encontrado</strong></p>
+                
+                
                 ) : (
-                    <p>Carregando...</p>
+                    <p><strong>Carregando...</strong></p>
                 )}
             </div>
         </div>
