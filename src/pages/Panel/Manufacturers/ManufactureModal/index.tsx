@@ -42,10 +42,10 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
             formData.append("file", image);
         }
         if (!id) {
-            await post("manufacturers/", formData, token, { 
+            await post("manufacturers/", formData, token, {
                 "Content-Type": "multipart/form-data"
             });
-                
+
         } else {
             await put(`manufacturers/${id}`, formData, token, {
                 "Content-Type": "multipart/form-data"
@@ -76,10 +76,10 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         if (acceptedFiles && acceptedFiles.length > 0) {
             const file = acceptedFiles[0];
             const reader = new FileReader();
-            
+
             reader.onload = () => {
-               reader.result as string;
-    
+                reader.result as string;
+
             };
 
             reader.readAsDataURL(file);
@@ -98,11 +98,11 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
             {isOpen && (
                 <div className="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50 p-5">
 
-                    <div className="bg-white p-6 rounded-lg"  style={{minWidth: '500px'}}>
+                    <div className="bg-white p-6 rounded-lg" style={{ minWidth: '500px' }}>
                         <span className="absolute top-0 right-0 cursor-pointer" onClick={handleClose}>&times;</span>
                         <h2 className="text-xl font-semibold mb-4">{id ? "Atualizar" : "Cadastrar "} Fabricante</h2>
                         <div className="mb-4">
-                            <label htmlFor="manufacturerName"  id="manufacturerName" className="block mb-1">Nome:</label>
+                            <label htmlFor="manufacturerName" id="manufacturerName" className="block mb-1">Nome:</label>
                             <input
                                 type="text"
                                 name="manufacturerName"
@@ -115,17 +115,17 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                         <div className="mb-4">
                             <label htmlFor="manufacturerImage" id="manufacturerImage" className="block mb-1">Imagem:</label>
                             <div {...getRootProps()} className="dropzone">
-                                <input {...getInputProps()} id="manufacturerImage" name="manufacturerImage"/>
+                                <input {...getInputProps()} id="manufacturerImage" name="manufacturerImage" />
                                 {imageUrl || image ?
                                     <>
                                         {image !== undefined ?
-                                                <div className = "relative h-20 w-20">
-                                                    < img src={URL.createObjectURL(image)} alt="Manufacturer Image" className="h-20 w-20 mb-2 object-cover" />
-                                                    <button className="absolute bottom-0 right-0 bg-red-500 text-white p-1 rounded-full" onClick={handleRemoveImage}>
-                                                        <TrashIcon className="h-4 w-4" />
-                                                    </button>
-                                                </div>
-                                        :
+                                            <div className="relative h-20 w-20">
+                                                < img src={URL.createObjectURL(image)} alt="Manufacturer Image" className="h-20 w-20 mb-2 object-cover" />
+                                                <button className="absolute bottom-0 right-0 bg-red-500 text-white p-1 rounded-full" onClick={handleRemoveImage}>
+                                                    <TrashIcon className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                            :
                                             <div className="relative h-20 w-20">
                                                 <img src={`http://localhost:3000${imageUrl}`} alt="Manufacturer Image" className="h-20 w-20 mb-2 object-cover" />
                                                 <button className="absolute bottom-0 right-0 bg-red-500 text-white p-1 rounded-full" onClick={handleRemoveImage}>
@@ -134,28 +134,28 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                                             </div>
                                         }
                                     </>
-                            :
-                            <>
-                                <div className="flex justify-center items-center w-14 h-14 cursor-pointer border-gray-400 rounded-md border-2 ">
-                                    <PlusIcon className="h-8 w-8 text-gray-500" />
-                                </div>
-                                <span className="text-sm text-gray-500 mt-2">
-                                    Arraste e solte uma imagem aqui, ou clique para selecionar uma imagem
-                                </span>
-                            </>
-}
+                                    :
+                                    <>
+                                        <div className="flex justify-center items-center w-14 h-14 cursor-pointer border-gray-400 rounded-md border-2 ">
+                                            <PlusIcon className="h-8 w-8 text-gray-500" />
+                                        </div>
+                                        <span className="text-sm text-gray-500 mt-2">
+                                            Arraste e solte uma imagem aqui, ou clique para selecionar uma imagem
+                                        </span>
+                                    </>
+                                }
 
 
+                            </div>
+                        </div>
+                        <div className="flex justify-between">
+                            <button onClick={onClose} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Fechar</button>
+                            <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Salvar</button>
                         </div>
                     </div>
-                    <div className="flex justify-between">
-                        <button onClick={onClose} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Fechar</button>
-                        <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Salvar</button>
-                    </div>
-                </div>
-    </div >
-)
-}
+                </div >
+            )
+            }
 
         </>
     )

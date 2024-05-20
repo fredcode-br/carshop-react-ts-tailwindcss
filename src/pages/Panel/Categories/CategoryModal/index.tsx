@@ -43,7 +43,7 @@ function CategoryModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         }
         getVehicleTypes();
         getCurrentVehicleType();
-    }, [id]);
+    }, [get, id, vehicleType?.id]);
 
     const handleSave = async () => {
       

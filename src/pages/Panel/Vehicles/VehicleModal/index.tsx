@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useDropzone, Accept } from 'react-dropzone';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
-import CustomInput from "./CustomInput";
-import IVehicle from "../../../../types/IVehicle";
 import { useApi } from "../../../../hooks/useApi";
-import IVehicleType from "../../../../types/IVehicleType";
 import ICategory from "../../../../types/ICategory";
+import IManufacturer from "../../../../types/IManufacturer";
+import IVehicle from "../../../../types/IVehicle";
+import IVehicleType from "../../../../types/IVehicleType";
+import CustomInput from "./CustomInput";
 import CustomSelect from "./CustomSelect";
 
 interface Props {
@@ -16,9 +18,8 @@ interface Props {
 
 function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
     const [step, setStep] = useState(1);
-    const [images, setImages] = useState<File[]>([]);
-    // const token = sessionStorage.getItem("@App:token") || "";
-    const [vehicle, setVehicle] = useState<IVehicle>({
+    const token = sessionStorage.getItem("@App:token") || "";
+    const vehicleBase = {
         id: '',
         name: '',
         created_at: '',
@@ -40,15 +41,20 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         vehicleType: null,
         category: null,
         manufacturer: null,
-    });
+    }
+    const [vehicle, setVehicle] = useState<IVehicle>(vehicleBase);
     const [vehiclesTypes, setVehiclesTypes] = useState<IVehicleType[] | null>(null);
     const [categories, setCategories] = useState<ICategory[] | null>(null);
+    const [manufacturers, setManufacturers] = useState<IManufacturer[] | null>(null);
 
     const [vehicleTypeId, setVehicleTypeId] = useState<string>('');
     const [categoryId, setCategoryId] = useState<string>('');
     const [manufacturerId, setManufacturerId] = useState<string>('');
 
-    const { get } = useApi();
+    const [imageUrls, setImageUrls] = useState<Array<string>>([]);
+    const [images, setImages] = useState<File[]>([]);
+
+    const { get, post, put } = useApi();
 
     useEffect(() => {
         const getVehicle = async () => {
@@ -65,13 +71,19 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                     if (currentVehicle.category) {
                         await setCategoryId(currentVehicle.category?.id)
                     }
+                    if (currentVehicle.images) {
+                        const urls: string[] = []
+                        currentVehicle.images.map((url) => {
+                            urls.push(url.imageUrl)
+                        })
+                        setImageUrls(urls)
+                    }
                 }
             }
         };
 
         getVehicle();
     }, [id, get, vehicle]);
-
 
     useEffect(() => {
         const getVehiclesTypes = async () => {
@@ -86,6 +98,19 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
     }, [get, vehiclesTypes]);
 
     useEffect(() => {
+        const getManufacturers = async () => {
+            if (!manufacturers) {
+                const resp: IManufacturer[] = await get('manufacturers');
+                if (resp) {
+                    await setManufacturers(resp);
+                }
+            }
+        }
+        getManufacturers();
+    }, [get, manufacturers]);
+
+
+    useEffect(() => {
         const getCategories = async () => {
             if (!categories && vehicleTypeId !== "") {
                 const resp: ICategory[] = await get(`/vehicle-types/${vehicleTypeId}/categories/`);
@@ -97,6 +122,21 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         getCategories();
     }, [get, categories, vehicleTypeId, id]);
 
+    useEffect(() => {
+        const getCategoriesByType = async () => {
+            if (vehicleTypeId !== "") {
+                const resp: ICategory[] = await get(`/vehicle-types/${vehicleTypeId}/categories/`);
+                if (resp) {
+                    setCategories(resp);
+                }
+            }
+        };
+
+        getCategoriesByType();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [vehicleTypeId]);
+
+
     const handleNextStep = () => {
         setStep(step + 1);
     };
@@ -106,24 +146,88 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
     };
 
     const handleSave = async () => {
+        const removedImageUrls: string[] = [];
+        
+        const currentVehicle = {
+            ...vehicle,
+            manufacturerId: Number(manufacturerId),
+            categoryId: Number(categoryId),
+            vehicleTypeId: Number(vehicleTypeId)
+        };
+
+        currentVehicle.images.forEach((image) => {
+            if (!imageUrls.find(url => url === image.imageUrl)) {
+                removedImageUrls.push(image.imageUrl);
+            }
+        });
+        
+
+        const formData = new FormData();
+       
+        if(images.length > 0){
+            await images.forEach((file) => {
+                formData.append(`files`, file);
+            });
+        }
+        if (id === undefined) {
+            const newVehicle: IVehicle = await post(`vehicles/`, currentVehicle, token);
+            if(formData){
+                await post(`/vehicles/${newVehicle.id}/images`, formData, token,{
+                    "Content-Type": "multipart/form-data"
+                });            
+            }   
+        }else {
+            // await put(`vehicles/${id}`, currentVehicle, token);
+            if (removedImageUrls.length > 0 || formData) {
+               
+                removedImageUrls.forEach(url => {
+                    formData.append('removedImageUrls', url);
+                });
+                await put(`vehicles/${id}/images`, formData, token,{
+                    "Content-Type": "multipart/form-data"
+                });          
+            }
+        }
+    
+        setVehicle(vehicleBase);
         onSaveSuccess();
-        onClose();
+        handleClose();
     };
+    
 
     const handleClose = () => {
+        setImages([])
         onClose();
     };
 
-    // const onDrop = (acceptedFiles: File[]) => {
-    //     const newImages = [...images, ...acceptedFiles];
-    //     setImages(newImages.slice(0, 6)); // Limite de 6 imagens
-    // };
+    const onDrop = (acceptedFiles: File[]) => {
+        if (acceptedFiles && acceptedFiles.length > 0) {
+            const newImages = [...images, ...acceptedFiles].slice(0, 6);
+            setImages(newImages);
+        }
+    };
 
     const handleRemoveImage = (index: number) => {
-        const updatedImages = [...images];
-        updatedImages.splice(index, 1);
-        setImages(updatedImages);
+        if (index < imageUrls.length) {
+            const newImageUrls = [...imageUrls];
+            newImageUrls.splice(index, 1);
+            setImageUrls(newImageUrls);
+        } else {
+            const newImages = [...images];
+            newImages.splice(index - imageUrls.length, 1);
+            setImages(newImages);
+        }
     };
+    
+    const accept: Accept = {
+        'image/*': []
+    };
+
+    const { getRootProps, getInputProps } = useDropzone({
+        onDrop,
+        accept,
+        multiple: true,
+    });
 
     return (
         <>
@@ -149,22 +253,29 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                                         onChange={(e) => setVehicle({ ...vehicle, model: e.target.value })}
                                         type="text"
                                     />
-                                    <CustomInput
-                                        id="vehiclePrice"
-                                        label="Preço"
-                                        value={vehicle.price}
-                                        onChange={(e) => setVehicle({ ...vehicle, price: Number(e.target.value) })}
-                                        type="number"
+                                    <div className="w-full flex justify-between">
+                                        <CustomInput
+                                            id="vehiclePrice"
+                                            label="Preço"
+                                            value={vehicle.price}
+                                            onChange={(e) => setVehicle({ ...vehicle, price: Number(e.target.value) })}
+                                            type="number"
+                                        />
+                                        <CustomInput
+                                            id="vehicleYear"
+                                            label="Ano"
+                                            value={vehicle.year}
+                                            onChange={(e) => setVehicle({ ...vehicle, year: Number(e.target.value) })}
+                                            type="number"
+                                        />
+                                    </div>
+                                    <CustomSelect
+                                        id="manufacturerId"
+                                        label="Fabricante"
+                                        value={manufacturerId}
+                                        onChange={(e) => setManufacturerId(e.target.value)}
+                                        options={manufacturers}
                                     />
-                                    <CustomInput
-                                        id="vehicleYear"
-                                        label="Ano"
-                                        value={vehicle.year}
-                                        onChange={(e) => setVehicle({ ...vehicle, year: Number(e.target.value) })}
-                                        type="number"
-                                    />
-
-
                                 </div>
                             </>
                         )}
@@ -287,25 +398,43 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                         {step === 5 && (
                             <>
                                 <h2 className="text-xl font-semibold mb-4">Imagens</h2>
-                                <div className="flex flex-wrap gap-4">
-                                    {images.map((image, index) => (
-                                        <div key={index} className="relative">
-                                            <img src={URL.createObjectURL(image)} alt={`Image ${index + 1}`} className="h-40 w-40 mb-2 object-cover" />
-                                            <button onClick={() => handleRemoveImage(index)} className="absolute bottom-0 right-0 bg-red-500 text-white p-1 rounded-full">
+
+                                <div className="mb-4">
+                            <label htmlFor="manufacturerImage" className="block mb-1">Imagem:</label>
+                            <div {...getRootProps()} className="dropzone">
+                                <input {...getInputProps()} id="manufacturerImage" name="manufacturerImage" />
+                                <div className="flex flex-wrap">
+                                    {imageUrls.map((imageUrl, index) => (
+                                        <div key={index} className="relative h-20 w-20 m-1">
+                                            <img src={`http://localhost:3000${imageUrl}`} alt={`Imagem ${index}`} className="h-20 w-20 mb-2 object-cover" />
+                                            <button className="absolute bottom-0 right-0 bg-red-500 text-white p-1 rounded-full" onClick={() => handleRemoveImage(index)}>
                                                 <TrashIcon className="h-4 w-4" />
                                             </button>
                                         </div>
                                     ))}
-                                    {images.length < 6 && (
-                                        <div className="flex justify-center items-center w-40 h-40 cursor-pointer border-gray-400 rounded-md border-2">
+                                    {images.map((image, index) => (
+                                        <div key={image.name + index} className="relative h-20 w-20 m-1">
+                                            <img src={URL.createObjectURL(image)} alt={`Imagem ${index}`} className="h-20 w-20 mb-2 object-cover" />
+                                            <button className="absolute bottom-0 right-0 bg-red-500 text-white p-1 rounded-full" onClick={() => handleRemoveImage(imageUrls.length + index)}>
+                                                <TrashIcon className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {(images.length + imageUrls.length) < 6 && (
+                                        <div className="flex justify-center items-center w-20 h-20 cursor-pointer border-gray-400 rounded-md border-2 m-1">
                                             <PlusIcon className="h-8 w-8 text-gray-500" />
                                         </div>
                                     )}
                                 </div>
+                                {(images.length + imageUrls.length) === 0 && (
+                                    <span className="text-sm text-gray-500 mt-2">
+                                        Arraste e solte uma imagem aqui, ou clique para selecionar uma imagem
+                                    </span>
+                                )}
+                            </div>
+                        </div>
                             </>
                         )}
-
-
                         <div className="flex justify-between">
                             <button onClick={handleClose} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Fechar</button>
                             <div className="flex gap-2">
@@ -325,7 +454,6 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                                     <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Salvar</button>
                                 )}
                             </div>
-
                         </div>
                     </div>
                 </div>
