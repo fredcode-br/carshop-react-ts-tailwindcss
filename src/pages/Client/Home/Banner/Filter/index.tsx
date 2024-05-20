@@ -162,9 +162,9 @@ function Filter() {
             />
             <RangeSlider
                 highest={highestPriceVehicle?.price || 0} 
-                lowest={lowestPriceVehicle?.price || 100000}
-                onLeftValueChange={handleMinPriceChange}
-                onRightValueChange={handleMaxPriceChange}
+                lowest={lowestPriceVehicle?.price || 3000}
+                onLeftValueChange={(value) => handleMinPriceChange(Math.round(value))}
+                onRightValueChange={(value) => handleMaxPriceChange(Math.round(value))}
             />
             <div className="w-full flex">
                 <Button type="submit" customClass="min-w-full" handleClick={handleSearch}>
