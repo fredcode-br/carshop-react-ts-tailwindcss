@@ -177,21 +177,21 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                 });            
             }   
         }else {
-            // await put(`vehicles/${id}`, currentVehicle, token);
+            await put(`vehicles/${id}`, currentVehicle, token);
             if (removedImageUrls.length > 0 || formData) {
-               
-                removedImageUrls.forEach(url => {
-                    formData.append('removedImageUrls', url);
-                });
+        
+                formData.append('removedImageUrls', JSON.stringify(removedImageUrls));
+                
                 await put(`vehicles/${id}/images`, formData, token,{
                     "Content-Type": "multipart/form-data"
                 });          
             }
         }
     
-        setVehicle(vehicleBase);
         onSaveSuccess();
-        handleClose();
+        setImages([])
+        onClose();
+        setVehicle(vehicleBase);
     };
     
 
@@ -402,7 +402,7 @@ function VehicleModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                                 <div className="mb-4">
                             <label htmlFor="manufacturerImage" className="block mb-1">Imagem:</label>
                             <div {...getRootProps()} className="dropzone">
-                                <input {...getInputProps()} id="manufacturerImage" name="manufacturerImage" />
+                                <input {...getInputProps()} id="vehicleImage" name="vehicleImage" />
                                 <div className="flex flex-wrap">
                                     {imageUrls.map((imageUrl, index) => (
                                         <div key={index} className="relative h-20 w-20 m-1">

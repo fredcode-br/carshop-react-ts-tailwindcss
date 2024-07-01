@@ -36,10 +36,14 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
     }, [id, get, manufacturer]);
 
     const handleSave = async () => {
+        console.log("here")
         const formData = new FormData();
         formData.append("name", name);
         if (image) {
             formData.append("file", image);
+        }
+        else{
+            formData.append("imageUrl", imageUrl);
         }
         if (!id) {
             await post("manufacturers/", formData, token, {
@@ -52,11 +56,11 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
             });
         }
 
+        onClose();
+        onSaveSuccess();
         setName('');
         setImageUrl('');
         setImage(undefined);
-        onSaveSuccess();
-        onClose();
     }
 
     const handleClose = () => {
