@@ -6,7 +6,7 @@ import Select from '../../../components/Form/Select';
 import IManufacturer from '../../../types/IManufacturer';
 import ICategory from '../../../types/ICategory';
 import { IResponse } from '../../../types/IRespoonse';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function Stock() {
     const [vehicles, setVehicles] = useState<Partial<IVehicle[]> | null>(null);
@@ -19,7 +19,8 @@ function Stock() {
 
     const [searchTerm, setSearchTerm] = useState<string>('');
 
-   
+    const navigate = useNavigate();
+
     const { get } = useApi();
     const location = useLocation();
 
@@ -47,7 +48,7 @@ function Stock() {
                 setSearchTerm(params.get('searchTerm') || searchTerm);
 
                 // Construct URL with query parameters and fetch vehicles
-                const url = `/vehicles?${params.toString()}&limit=2&status=Disponível`;
+                const url = `/vehicles?${params.toString()}&limit=10&status=Disponível`;
                 const vehiclesResponse: IResponse = await get(url);
                 if (vehiclesResponse) {
                     setVehicles(vehiclesResponse.vehicles);
@@ -91,6 +92,7 @@ function Stock() {
          if (vehiclesResponse) {
              setVehicles(vehiclesResponse.vehicles);
          }
+        navigate('/estoque')
         
     };
 
