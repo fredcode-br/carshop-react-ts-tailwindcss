@@ -61,6 +61,7 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         setName('');
         setImageUrl('');
         setImage(undefined);
+        setManufacturer(null);
     }
 
     const handleClose = () => {
