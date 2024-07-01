@@ -11,7 +11,7 @@ interface Props {
 }
 
 function CategoryModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
-    const [vehicleType, setVehicleType] = useState<ICategory | null>(null);
+    const [category, setCategory] = useState<ICategory[] | null>(null);
     const [name, setName] = useState('');
     const [vehicleTypeId, setVehicleTypeId] = useState<string>('');
     const [vehicleTypes, setVehicleTypes] = useState<IVehicleType[]>([]);
@@ -23,27 +23,28 @@ function CategoryModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         setToken(token);
 
         const getVehicleTypes = async () => {
-            
                 const currentVehicleType = await get(`/vehicle-types`);
                 if (currentVehicleType) {
                 setVehicleTypes(currentVehicleType);
                 }
-            
         }
 
-        const getCurrentVehicleType = async () => {
-            if (id && id !== vehicleType?.id) {
-                const currentVehicleType = await get(`categories/${id}`);
-                if (currentVehicleType) {
-                   
-                    setName(currentVehicleType[0].name);
-                    setVehicleTypeId(currentVehicleType[0].vehicleType.id);
+        getVehicleTypes();
+    }, [id, get]);
+
+    useEffect(() => {
+        const getCurrentCategory = async () => {
+            if (id && id !== category?.[0]?.id){
+                const currentCategory = await get(`categories/${id}`);
+                if (currentCategory) {
+                    setName(currentCategory[0].name);
+                    setVehicleTypeId(currentCategory[0].vehicleType.id);
                 }
             }
         }
-        getVehicleTypes();
-        getCurrentVehicleType();
-    }, [get, id, vehicleType?.id]);
+        getCurrentCategory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, category]);
 
     const handleSave = async () => {
       
@@ -53,14 +54,14 @@ function CategoryModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         } else {
             await put(`categories/${id}`, { name: name, vehicleTypeId: parseInt(vehicleTypeId) }, token); 
         }
-        setVehicleType(null);
+        setCategory(null);
         setName('');
         onSaveSuccess();
         onClose();
     }
 
     const handleClose = () => {
-        setVehicleType(null);
+        setCategory(null);
         setName('');
         onClose();
     }
