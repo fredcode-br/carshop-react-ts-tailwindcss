@@ -19,11 +19,11 @@ function Stock() {
 
     const [searchTerm, setSearchTerm] = useState<string>('');
 
-    const navigate = useNavigate();
-
+   
     const { get } = useApi();
     const location = useLocation();
-
+    const navigate = useNavigate();
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -48,7 +48,7 @@ function Stock() {
                 setSearchTerm(params.get('searchTerm') || searchTerm);
 
                 // Construct URL with query parameters and fetch vehicles
-                const url = `/vehicles?${params.toString()}&limit=10&status=Disponível`;
+                const url = `/vehicles?${params.toString()}&limit=2&status=Disponível`;
                 const vehiclesResponse: IResponse = await get(url);
                 if (vehiclesResponse) {
                     setVehicles(vehiclesResponse.vehicles);
@@ -60,6 +60,8 @@ function Stock() {
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
+            const queryParams = ""
+            navigate('/estoque')
         };
 
         fetchData();
@@ -92,7 +94,6 @@ function Stock() {
          if (vehiclesResponse) {
              setVehicles(vehiclesResponse.vehicles);
          }
-        navigate('/estoque')
         
     };
 
