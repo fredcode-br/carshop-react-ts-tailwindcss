@@ -21,6 +21,7 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
     const { get, post, put } = useApi();
 
     useEffect(() => {
+        // alert(token)
         const getManufacturer = async () => {
             if (id && id !== manufacturer?.id) {
                 const currentManufacturer = await get(`manufacturers/${id}`);
@@ -131,7 +132,7 @@ function ManufacturerModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                                             </div>
                                             :
                                             <div className="relative h-20 w-20">
-                                                <img src={`http://localhost:3000${imageUrl}`} alt="Manufacturer Image" className="h-20 w-20 mb-2 object-cover" />
+                                                <img src={ imageUrl.includes('carshopstore') ? imageUrl : `http://localhost:3000${imageUrl}`} alt="Manufacturer Image" className="h-20 w-20 mb-2 object-cover" />
                                                 <button className="absolute bottom-0 right-0 bg-red-500 text-white p-1 rounded-full" onClick={handleRemoveImage}>
                                                     <TrashIcon className="h-4 w-4" />
                                                 </button>

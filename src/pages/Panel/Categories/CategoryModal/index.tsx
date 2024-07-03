@@ -28,14 +28,13 @@ function CategoryModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
                 if (currentVehicleType) {
                 setVehicleTypes(currentVehicleType);
                 }
-            
+             
         }
 
         const getCurrentVehicleType = async () => {
             if (id && id !== vehicleType?.id) {
                 const currentVehicleType = await get(`categories/${id}`);
-                if (currentVehicleType) {
-                   
+                if (currentVehicleType) {                   
                     setName(currentVehicleType[0].name);
                     setVehicleTypeId(currentVehicleType[0].vehicleType.id);
                 }
@@ -43,7 +42,7 @@ function CategoryModal({ id, isOpen, onClose, onSaveSuccess }: Props) {
         }
         getVehicleTypes();
         getCurrentVehicleType();
-    }, [get, id, vehicleType?.id]);
+    }, [get, id, vehicleType]);
 
     const handleSave = async () => {
       

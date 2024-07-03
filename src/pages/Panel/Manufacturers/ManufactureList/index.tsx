@@ -90,7 +90,7 @@ function ManufacturerList({ handleNewButton, onSave, manufacturers }: Props) {
                                         /> :
                                         <img
                                             className="h-12 w-18"
-                                            src={`http://localhost:3000${manufacturerer.imageUrl}`}
+                                            src={ manufacturerer.imageUrl.includes('carshopstore') ? manufacturerer.imageUrl :  `http://localhost:3000${manufacturerer.imageUrl}`}
                                             alt={`logo da marca ${manufacturerer.name}`}
                                         />
                                     }
