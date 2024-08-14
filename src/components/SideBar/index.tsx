@@ -53,7 +53,7 @@ function SideBar() {
           activeLink={activeLink}
           setActiveLink={handleSetActiveLink}
         />
-       <Button handleClick={()=>{signOut(); navigate('/home')}}> Sair</Button>
+       {/* <Button handleClick={()=>{signOut(); navigate('/home')}}> Sair</Button> */}
       </nav>
     </div>
   );

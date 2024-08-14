@@ -52,9 +52,9 @@ function Header(){
               </NavLink>
             </li>
             <li>
-              <NavLink to="/login" className="block py-2 px-3 text-white md:p-0 hover:text-slate-400">
+              {/* <NavLink to="/login" className="block py-2 px-3 text-white md:p-0 hover:text-slate-400">
                 Membro
-              </NavLink>
+              </NavLink> */}
             </li>
           </ul>
         </div>
