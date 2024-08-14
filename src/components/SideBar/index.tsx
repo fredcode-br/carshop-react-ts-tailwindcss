@@ -1,11 +1,14 @@
 import SideLink from "./SideLink";
 
 import logo from "../../assets/img/logoadm.png";
-import { useEffect, useState } from "react";
-
+import { useContext, useEffect, useState } from "react";
+import Button from "../Button";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../common/context/AuthContext";
 function SideBar() {
   const [activeLink, setActiveLink] = useState(""); 
-  
+  const navigate = useNavigate();
+  const { signOut } = useContext(AuthContext);
   useEffect(() => {
     const url: string = window.location.pathname;
     const valorAposBarra: string = url.split("/")[1];
@@ -50,6 +53,7 @@ function SideBar() {
           activeLink={activeLink}
           setActiveLink={handleSetActiveLink}
         />
+       <Button handleClick={()=>{signOut(); navigate('/home')}}> Sair</Button>
       </nav>
     </div>
   );

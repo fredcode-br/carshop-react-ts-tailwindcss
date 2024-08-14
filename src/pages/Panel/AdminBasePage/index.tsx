@@ -1,8 +1,9 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 import SideBar from "../../../components/SideBar";
 
 export default function AdminBasePage() {
+
   return (
     <div className="flex min-h-screen">
         <SideBar />

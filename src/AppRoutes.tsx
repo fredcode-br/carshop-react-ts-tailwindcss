@@ -29,7 +29,7 @@ function AppRoutes() {
                 </Route>   
                 <Route path="/" element={<PrivateRoute />}>
                     <Route element={<AdminBasePage />}>
-                        <Route path="/home" element={<Navigate to="/vehicles" />} />
+                        <Route path="/home" element={<Navigate to="/login" />} />
                         <Route path="/fabricantes" element={<Manufacturers />} />
                         <Route path="/tipos-de-veiculos" element={<VehicleType />} />
                         <Route path="/categorias" element={<Categories />} />

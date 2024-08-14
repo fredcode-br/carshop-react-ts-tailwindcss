@@ -51,6 +51,11 @@ function Header(){
                 Contato
               </NavLink>
             </li>
+            <li>
+              <NavLink to="/login" className="block py-2 px-3 text-white md:p-0 hover:text-slate-400">
+                Membro
+              </NavLink>
+            </li>
           </ul>
         </div>
       </div>
